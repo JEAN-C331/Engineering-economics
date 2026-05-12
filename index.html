@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ECON-ENG Hub — Engineering Economics</title>
+    <meta
+      name="description"
+      content="Engineering economics: knowledge tracks, interactive cash-flow lab, KaTeX formulas, and tiered challenge mode with leaderboards."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">EE</div>
+          <div>
+            <h1>ECON-ENG Hub</h1>
+            <span>Engineering economics</span>
+          </div>
+        </div>
+        <nav aria-label="Primary">
+          <ul>
+            <li><a href="#hub">Knowledge Hub</a></li>
+            <li><a href="#models">Models lab</a></li>
+            <li><a href="#challenge">Challenge</a></li>
+            <li><a href="#play">Interact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h2 id="hero-title">Engineering economics: notes, models, and quizzes.</h2>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#hub">Open Knowledge Hub</a>
+            <a class="btn" href="#challenge">Start challenge mode</a>
+          </div>
+        </div>
+        <aside
+          class="hero-card hero-spotlight"
+          aria-roledescription="carousel"
+          aria-label="Important engineering economics ideas"
+        >
+          <div class="hero-spotlight-top">
+            <h3 id="hero-spotlight-title">Key ideas</h3>
+            <div class="hero-dots" id="hero-dots" role="tablist" aria-label="Slide indicators"></div>
+          </div>
+          <div class="hero-viewport" id="hero-viewport" aria-live="polite"></div>
+          <div class="hero-spotlight-nav">
+            <button type="button" class="hero-arrow" id="hero-prev" aria-controls="hero-viewport" aria-label="Previous slide">
+              ‹
+            </button>
+            <button type="button" class="hero-arrow" id="hero-next" aria-controls="hero-viewport" aria-label="Next slide">
+              ›
+            </button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section" id="hub" aria-labelledby="hub-title">
+        <div class="section-head">
+          <h2 id="hub-title">Knowledge Hub</h2>
+          <p>
+            Search by keyword, then filter by <strong>knowledge track</strong> (not by slide deck). Expand a card for concise notes and
+            typeset formulas.
+          </p>
+        </div>
+        <div class="hub-layout">
+          <aside class="hub-sidebar" aria-label="Search and filters">
+            <label for="topic-search">Quick search</label>
+            <div class="search-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm0-2a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11Z"
+                  fill="currentColor"
+                />
+                <path d="M15.446 15.446 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <input
+                id="topic-search"
+                type="search"
+                autocomplete="off"
+                placeholder="Try: perpetuity, EAR, P/F…"
+                aria-describedby="search-hint"
+              />
+            </div>
+            <p id="search-hint" style="margin: 10px 0 0; font-size: 0.78rem; color: var(--muted)">
+              <span id="topic-count">0</span> topics visible
+            </p>
+            <div class="filter-chips" id="hub-chips" role="group" aria-label="Filter by knowledge track"></div>
+          </aside>
+          <div id="topic-list" class="topic-list"></div>
+        </div>
+      </section>
+
+      <section class="section" id="models" aria-labelledby="models-title">
+        <div class="section-head">
+          <h2 id="models-title">Quantitative models &amp; cash-flow laboratory</h2>
+          <p>
+            Pair tabular inputs with dynamic SVGs—the same “sketch first, then compute” workflow emphasized in professional engineering
+            economy practice.
+          </p>
+        </div>
+
+        <article class="viz-panel">
+          <h3 class="viz-title">Cash-flow timeline explorer</h3>
+          <p class="viz-lead">
+            Enter signed cash flows (negative for outlays, positive for receipts). The diagram rescales arrow lengths using a logarithmic
+            stretch so both small and large amounts remain visible.
+          </p>
+          <div class="viz-split">
+            <div class="data-table-wrap">
+              <div class="field-row">
+                <label for="cfd-n">Highest period index <em>N</em> (0…<em>N</em>)</label>
+                <input id="cfd-n" type="number" min="1" max="12" value="4" />
+              </div>
+              <table class="data-table" id="cfd-table">
+                <thead>
+                  <tr>
+                    <th>Period <em>t</em></th>
+                    <th>Net cash flow</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <button type="button" class="btn" id="cfd-reset">Reset example pattern</button>
+            </div>
+            <div class="viz-svg-wrap">
+              <svg id="svg-cfd" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+          </div>
+        </article>
+
+        <article class="viz-panel" style="margin-top: 22px">
+          <h3 class="viz-title">Simple vs compound terminal wealth</h3>
+          <p class="viz-lead">
+            Compare two textbook benchmarks at integer years: simple <em>F<sub>k</sub></em> = <em>P</em>(1 + <em>ik</em>) versus compound
+            <em>F<sub>k</sub></em> = <em>P</em>(1 + <em>i</em>)<sup><em>k</em></sup>. Adjust the table and the paths update.
+          </p>
+          <div class="viz-split">
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <tbody>
+                  <tr>
+                    <th scope="row">Principal <em>P</em> ($)</th>
+                    <td><input id="sc-p" type="number" min="1" step="100" value="1000" /></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Interest rate <em>i</em> (per year, decimal input as %)</th>
+                    <td><input id="sc-i" type="number" min="0" max="50" step="0.5" value="8" /> %</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Horizon <em>n</em> (years)</th>
+                    <td><input id="sc-n" type="number" min="1" max="25" step="1" value="5" /></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="viz-note">Plotted at <em>k</em> = 0,1,…,<em>n</em>. Same <em>i</em> anchors both curves for a controlled comparison.</p>
+            </div>
+            <div class="viz-svg-wrap">
+              <svg id="svg-sc" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section" id="challenge" aria-labelledby="challenge-title">
+        <div class="section-head">
+          <h2 id="challenge-title">Challenge mode &amp; leaderboards</h2>
+          <p>
+            Twelve questions per difficulty tier. After each answer you get a verdict plus a worked solution. Scores are stored locally by
+            default; optional Supabase keys enable one shared online board for everyone loading this page.
+          </p>
+        </div>
+        <div class="challenge-layout">
+          <div id="challenge-root" class="challenge-main"></div>
+          <aside class="lb-aside" aria-labelledby="lb-heading">
+            <h3 id="lb-heading">Leaderboard</h3>
+            <div id="leaderboard-root"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="play" aria-labelledby="play-title">
+        <div class="section-head">
+          <h2 id="play-title">Interact and play</h2>
+          <p>Sliders, quick scenarios, and flip cards for warm-up outside the graded challenge.</p>
+        </div>
+        <div class="play-grid">
+          <div class="panel" aria-labelledby="calc-title">
+            <h3 id="calc-title">Future value explorer</h3>
+            <div id="fv-formula-katex" class="katex-block"></div>
+            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">
+              Discrete compounding with nominal annual <em>r</em> and <em>m</em> settlements per year.
+            </p>
+            <div class="slider-row">
+              <label><span>Principal P</span><span id="lab-p">1000</span></label>
+              <input id="in-p" type="range" min="100" max="10000" step="100" value="1000" />
+            </div>
+            <div class="slider-row">
+              <label><span>Nominal annual r</span><span id="lab-r">8%</span></label>
+              <input id="in-r" type="range" min="0" max="20" step="0.5" value="8" />
+            </div>
+            <div class="slider-row">
+              <label><span>Years t</span><span id="lab-t">5</span></label>
+              <input id="in-t" type="range" min="1" max="20" step="1" value="5" />
+            </div>
+            <div class="slider-row">
+              <label><span>Compounding periods per year m</span><span id="lab-m">12</span></label>
+              <input id="in-m" type="range" min="1" max="365" step="1" value="12" />
+            </div>
+            <div class="calc-output" aria-live="polite">
+              Ending balance <em>F</em> ≈ <strong id="out-f">—</strong><br />
+              Effective annual rate <em>i<sub>a</sub></em> ≈ <strong id="out-ia">—</strong>
+            </div>
+          </div>
+
+          <div class="panel" aria-labelledby="loan-title">
+            <h3 id="loan-title">Which financing offer is cheaper?</h3>
+            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">Compare effective annual borrowing costs when nominal quotes and m differ.</p>
+            <div class="quiz-q" id="loan-scenario"></div>
+            <div class="quiz-options" id="loan-options"></div>
+            <div class="quiz-feedback" id="loan-feedback" aria-live="polite"></div>
+            <button type="button" class="btn" id="loan-next" style="margin-top: 12px">New scenario</button>
+          </div>
+
+          <div class="panel" aria-labelledby="quiz-title">
+            <h3 id="quiz-title">NPW quick check</h3>
+            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">Mutually exclusive choice at a common MARR and horizon.</p>
+            <div class="quiz-q" id="mc-q"></div>
+            <div class="quiz-options" id="mc-opts"></div>
+            <div class="quiz-feedback" id="mc-fb" aria-live="polite"></div>
+            <button type="button" class="btn" id="mc-next" style="margin-top: 12px">Next question</button>
+          </div>
+
+          <div class="panel" aria-labelledby="flash-title">
+            <h3 id="flash-title">Formula flip cards</h3>
+            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">Tap a card to flip. Front: concept; back: typeset formula.</p>
+            <div class="flash-grid" id="flash-grid"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        ECON-ENG Hub — formulas rendered with <a href="https://katex.org/">KaTeX</a>. Optional shared scores: edit
+        <code>js/remote.config.js</code> with Supabase REST credentials. Topics live in <code>js/knowledge.js</code>; questions in
+        <code>js/challenge-data.js</code>.
+      </p>
+      <div class="footer-refs" id="references">
+        <p class="footer-refs-label">References</p>
+        <p>
+          Newnan, D. G., Eschenbach, T. G., &amp; Lavelle, J. P. <cite>Engineering Economic Analysis</cite> (11th&nbsp;ed.). Factor
+          notation and present-worth framing on this site are written to align with mainstream classroom texts such as this one. This
+          website does not host textbook PDFs—use your licensed copy for chapter reading and end-of-chapter exercises.
+        </p>
+        <p class="footer-refs-note">
+          Slide handouts or other course PDFs are not listed here as formal references; cite only materials your instructor approves
+          for academic work.
+        </p>
+      </div>
+    </footer>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="js/knowledge.js"></script>
+    <script defer src="js/challenge-data.js"></script>
+    <script defer src="js/remote.config.js"></script>
+    <script defer src="js/visual-lab.js"></script>
+    <script defer src="js/challenge.js"></script>
+    <script defer src="js/app.js"></script>
+  </body>
+</html>
