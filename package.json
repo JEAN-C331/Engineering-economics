@@ -1,0 +1,7 @@
+{
+  "name": "econ-eng-hub",
+  "private": true,
+  "scripts": {
+    "serve": "npx --yes serve@14 -l 3000 ."
+  }
+}

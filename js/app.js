@@ -217,6 +217,10 @@
   const inR = $("#in-r");
   const inT = $("#in-t");
   const inM = $("#in-m");
+  const inPNum = $("#in-p-num");
+  const inRNum = $("#in-r-num");
+  const inTNum = $("#in-t-num");
+  const inMNum = $("#in-m-num");
   const labP = $("#lab-p");
   const labR = $("#lab-r");
   const labT = $("#lab-t");
@@ -238,6 +242,10 @@
     const r = Number(inR.value) / 100;
     const t = Number(inT.value);
     const m = Math.max(1, Math.round(Number(inM.value)));
+    if (inPNum) inPNum.value = String(P);
+    if (inRNum) inRNum.value = String(Number(inR.value).toFixed(1));
+    if (inTNum) inTNum.value = String(t);
+    if (inMNum) inMNum.value = String(m);
     labP.textContent = fmtMoney(P);
     labR.textContent = `${Number(inR.value).toFixed(1)}%`;
     labT.textContent = String(t);
@@ -248,12 +256,50 @@
     outIa.textContent = fmtPct(ia);
   }
 
-  [inP, inR, inT, inM].forEach((el) => el && el.addEventListener("input", recalcFv));
+  function bindFvPair(range, num, opts) {
+    if (!range || !num) return;
+    const { min, max, step, roundM, decimals } = opts;
+    const clamp = (v) => {
+      let x = Number(v);
+      if (!Number.isFinite(x)) x = Number(range.value);
+      x = Math.min(max, Math.max(min, x));
+      if (roundM) return Math.round(x);
+      return Math.round(x / step) * step;
+    };
+    range.addEventListener("input", () => {
+      const rv = Number(range.value);
+      if (decimals != null) num.value = rv.toFixed(decimals);
+      else num.value = String(roundM ? Math.round(rv) : Math.round(rv / step) * step);
+      recalcFv();
+    });
+    num.addEventListener("change", () => {
+      const x = clamp(num.value);
+      range.value = String(x);
+      if (decimals != null) num.value = x.toFixed(decimals);
+      else num.value = String(x);
+      recalcFv();
+    });
+  }
+
+  bindFvPair(inP, inPNum, { min: 100, max: 10000, step: 100, roundM: false });
+  bindFvPair(inR, inRNum, { min: 0, max: 20, step: 0.5, roundM: false, decimals: 1 });
+  bindFvPair(inT, inTNum, { min: 1, max: 20, step: 1, roundM: true });
+  bindFvPair(inM, inMNum, { min: 1, max: 365, step: 1, roundM: true });
+
   recalcFv();
 
   const fvFormulaEl = $("#fv-formula-katex");
   if (fvFormulaEl) {
     fvFormulaEl.innerHTML = renderFormula(String.raw`F=P\left(1+\frac{r}{m}\right)^{mt},\qquad i_a=\left(1+\frac{r}{m}\right)^m-1`);
+  }
+
+  function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
   /* ----- Loan EAR mini-game ----- */
@@ -298,7 +344,7 @@
     boxQ.textContent = s.text;
     boxO.innerHTML = "";
     fb.textContent = "";
-    s.options.forEach((opt) => {
+    shuffleArray(s.options).forEach((opt) => {
       const b = document.createElement("button");
       b.type = "button";
       b.textContent = opt.label;
@@ -356,7 +402,7 @@
     qEl.textContent = item.q;
     fEl.textContent = "";
     oEl.innerHTML = "";
-    item.opts.forEach((o) => {
+    shuffleArray(item.opts).forEach((o) => {
       const b = document.createElement("button");
       b.type = "button";
       b.textContent = o.t;

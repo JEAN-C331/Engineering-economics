@@ -55,49 +55,91 @@
     localStorage.setItem(LS_KEY, JSON.stringify(all.slice(0, 400)));
   }
 
+  function remoteBaseUrl() {
+    const u = (window.ECON_REMOTE?.supabaseUrl || "").trim().replace(/\/+$/, "");
+    return u;
+  }
+
   async function fetchRemote(difficulty) {
     const cfg = window.ECON_REMOTE;
-    if (!cfg?.supabaseUrl || !cfg?.supabaseAnonKey || !cfg?.scoresTable) return [];
-    const url = `${cfg.supabaseUrl}/rest/v1/${cfg.scoresTable}?difficulty=eq.${encodeURIComponent(
+    const base = remoteBaseUrl();
+    if (!base || !cfg?.supabaseAnonKey?.trim() || !cfg?.scoresTable) {
+      return { ok: false, rows: [], status: 0, detail: "URL or key missing in js/remote.config.js." };
+    }
+    const url = `${base}/rest/v1/${cfg.scoresTable}?difficulty=eq.${encodeURIComponent(
       difficulty
-    )}&order=score.desc&limit=30`;
-    const res = await fetch(url, {
-      headers: {
-        apikey: cfg.supabaseAnonKey,
-        Authorization: `Bearer ${cfg.supabaseAnonKey}`,
-      },
-    });
-    if (!res.ok) return [];
-    const rows = await res.json();
-    return rows.map((r) => ({
-      name: r.player_name,
-      score: r.score,
-      total: r.total,
-      difficulty: r.difficulty,
-      ts: new Date(r.created_at).getTime(),
-      source: "online",
-    }));
+    )}&order=score.desc&limit=30&select=player_name,score,total,difficulty,created_at`;
+    try {
+      const res = await fetch(url, {
+        headers: {
+          apikey: cfg.supabaseAnonKey,
+          Authorization: `Bearer ${cfg.supabaseAnonKey}`,
+          Accept: "application/json",
+        },
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        return { ok: false, rows: [], status: res.status, detail: text.slice(0, 280) || res.statusText };
+      }
+      let rows;
+      try {
+        rows = JSON.parse(text);
+      } catch (_) {
+        return { ok: false, rows: [], status: res.status, detail: "Server did not return JSON." };
+      }
+      if (!Array.isArray(rows)) {
+        return { ok: false, rows: [], status: res.status, detail: "Unexpected response shape." };
+      }
+      const mapped = rows.map((r) => ({
+        name: r.player_name,
+        score: r.score,
+        total: r.total,
+        difficulty: r.difficulty,
+        ts: new Date(r.created_at).getTime(),
+        source: "online",
+      }));
+      return { ok: true, rows: mapped, status: res.status, detail: "" };
+    } catch (e) {
+      return {
+        ok: false,
+        rows: [],
+        status: 0,
+        detail: e instanceof Error ? e.message : String(e),
+      };
+    }
   }
 
   async function pushRemote(entry) {
     const cfg = window.ECON_REMOTE;
-    if (!cfg?.supabaseUrl || !cfg?.supabaseAnonKey || !cfg?.scoresTable) return false;
-    const res = await fetch(`${cfg.supabaseUrl}/rest/v1/${cfg.scoresTable}`, {
-      method: "POST",
-      headers: {
-        apikey: cfg.supabaseAnonKey,
-        Authorization: `Bearer ${cfg.supabaseAnonKey}`,
-        "Content-Type": "application/json",
-        Prefer: "return=minimal",
-      },
-      body: JSON.stringify({
-        player_name: entry.name,
-        score: entry.score,
-        total: entry.total,
-        difficulty: entry.difficulty,
-      }),
-    });
-    return res.ok;
+    const base = remoteBaseUrl();
+    if (!base || !cfg?.supabaseAnonKey?.trim() || !cfg?.scoresTable) {
+      return { ok: false, status: 0, detail: "URL or key missing." };
+    }
+    try {
+      const res = await fetch(`${base}/rest/v1/${cfg.scoresTable}`, {
+        method: "POST",
+        headers: {
+          apikey: cfg.supabaseAnonKey,
+          Authorization: `Bearer ${cfg.supabaseAnonKey}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({
+          player_name: entry.name,
+          score: entry.score,
+          total: entry.total,
+          difficulty: entry.difficulty,
+        }),
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        return { ok: false, status: res.status, detail: text.slice(0, 280) || res.statusText };
+      }
+      return { ok: true, status: res.status, detail: "" };
+    } catch (e) {
+      return { ok: false, status: 0, detail: e instanceof Error ? e.message : String(e) };
+    }
   }
 
   function fmtDay(ts) {
@@ -108,10 +150,52 @@
     }
   }
 
+  function mergeDedupeScores(online, local) {
+    const all = [...online, ...local].sort((a, b) => b.score - a.score || a.ts - b.ts);
+    const seen = new Set();
+    const out = [];
+    for (const r of all) {
+      const k = `${String(r.name).toLowerCase()}|${r.difficulty}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push(r);
+    }
+    return out;
+  }
+
+  /** HTTP 0 + Failed to fetch: usually file:// origin, blocked network, or extension — not wrong password. */
+  function syncFailureHint(remote) {
+    if (remote.ok || remote.status !== 0) return "";
+    const detail = (remote.detail || "").toLowerCase();
+    const onFile = typeof location !== "undefined" && location.protocol === "file:";
+    const chunks = [];
+    if (onFile) {
+      chunks.push(
+        "<strong>Do not open <code>index.html</code> as a file.</strong> The address bar must show <code>http://…</code> or <code>https://…</code>, not <code>file:///…</code>."
+      );
+    }
+    if (detail.includes("failed to fetch") || detail.includes("networkerror")) {
+      chunks.push(
+        "Serve the project over HTTP: in the project folder run <code>npm run serve</code>, then open <code>http://localhost:3000</code>. Alternative: <code>py -m http.server 8080</code> → <code>http://localhost:8080</code>."
+      );
+    }
+    if (!chunks.length) {
+      chunks.push(
+        "No HTTP response reached the browser. Try <code>npm run serve</code> (see project <code>package.json</code>), another network, VPN if <code>*.supabase.co</code> is blocked, or disable strict extensions."
+      );
+    } else {
+      chunks.push(
+        "If you already use <code>http://localhost</code> and it still fails, your network may block Supabase — try VPN or mobile hotspot."
+      );
+    }
+    return `<div class="lb-diag-hint">${chunks.map((c) => `<p>${c}</p>`).join("")}</div>`;
+  }
+
   async function renderLeaderboard(difficulty) {
-    const online = await fetchRemote(difficulty).catch(() => []);
+    const remote = await fetchRemote(difficulty);
+    const online = remote.ok ? remote.rows : [];
     const local = loadLocal().filter((e) => e.difficulty === difficulty);
-    const merged = [...online, ...local].sort((a, b) => b.score - a.score || a.ts - b.ts).slice(0, 25);
+    const merged = mergeDedupeScores(online, local).slice(0, 30);
 
     let rows = "";
     merged.forEach((r, i) => {
@@ -120,6 +204,24 @@
       )}</td><td>${fmtDay(r.ts)}</td></tr>`;
     });
     if (!rows) rows = `<tr><td colspan="5" style="text-align:center;color:var(--muted)">No scores yet.</td></tr>`;
+
+    const cfg = window.ECON_REMOTE || {};
+    const hasRemote = !!(cfg.supabaseUrl?.trim() && cfg.supabaseAnonKey?.trim());
+    let diag = "";
+    if (hasRemote) {
+      if (remote.ok) {
+        diag = `<p class="lb-diag lb-diag-ok">Cloud sync OK · loaded <strong>${online.length}</strong> online row(s) for <code>${escapeHtml(
+          difficulty
+        )}</code>.</p>`;
+      } else {
+        diag = `<p class="lb-diag lb-diag-err" role="alert"><strong>Cloud sync failed</strong> (HTTP ${remote.status}). Only this browser’s <strong>device</strong> rows will show until this is fixed.<br /><code>${escapeHtml(
+          remote.detail || "unknown error"
+        )}</code></p>${syncFailureHint(remote)}`;
+      }
+    }
+    const footHtml = hasRemote
+      ? ""
+      : `<p class="lb-footnote"><strong>Shared rankings across computers:</strong> create a free Supabase project, add table <code>ee_scores</code>, enable anonymous read/insert (see <code>js/remote.config.js</code>), then paste URL + anon key. Until then, only this browser’s scores appear as <strong>device</strong>.</p>`;
 
     lbRoot.innerHTML = `
       <div class="lb-toolbar">
@@ -139,7 +241,8 @@
           <tbody>${rows}</tbody>
         </table>
       </div>
-      <p class="lb-footnote">Device rows are stored in each visitor’s browser. Configure <code>js/remote.config.js</code> with Supabase URL + anon key so everyone can load the same online table.</p>`;
+      ${diag}
+      ${footHtml}`;
 
     lbRoot.querySelectorAll(".lb-tab").forEach((btn) => {
       btn.addEventListener("click", () => renderLeaderboard(btn.getAttribute("data-diff") || "easy"));
@@ -198,8 +301,22 @@
     });
   }
 
+  function shuffleChoiceOrder(labels, correctIndex) {
+    const tagged = labels.map((label, i) => ({ label, ok: i === correctIndex }));
+    for (let i = tagged.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [tagged[i], tagged[j]] = [tagged[j], tagged[i]];
+    }
+    return {
+      labels: tagged.map((x) => x.label),
+      correctIndex: tagged.findIndex((x) => x.ok),
+    };
+  }
+
   function showQuestion() {
     const q = state.items[state.idx];
+    const sh = shuffleChoiceOrder(q.choices, q.correctIndex);
+    state.shuffledCorrectIndex = sh.correctIndex;
     const prog = `Question ${state.idx + 1} of ${state.items.length}`;
     const promptMathHtml = q.promptMath ? `<div class="q-math">${katexOrPlain(q.promptMath, true)}</div>` : "";
 
@@ -213,7 +330,7 @@
       </div>`;
 
     const opts = $("#ch-opts", root);
-    q.choices.forEach((label, idx) => {
+    sh.labels.forEach((label, idx) => {
       const b = document.createElement("button");
       b.type = "button";
       b.innerHTML = escapeHtml(label);
@@ -226,10 +343,11 @@
     const q = state.items[state.idx];
     const opts = root.querySelectorAll("#ch-opts button");
     opts.forEach((b) => (b.disabled = true));
-    const ok = choiceIdx === q.correctIndex;
+    const correctIdx = state.shuffledCorrectIndex;
+    const ok = choiceIdx === correctIdx;
     if (ok) state.score += 1;
     if (opts[choiceIdx]) opts[choiceIdx].classList.add(ok ? "correct" : "wrong");
-    if (!ok && opts[q.correctIndex]) opts[q.correctIndex].classList.add("correct");
+    if (!ok && opts[correctIdx]) opts[correctIdx].classList.add("correct");
 
     const after = $("#ch-after", root);
     after.classList.remove("hidden");
@@ -257,20 +375,22 @@
       ts: Date.now(),
     };
     saveLocal(entry);
-    const onlineOk = await pushRemote({
+    const push = await pushRemote({
       name: entry.name,
       score: entry.score,
       total: entry.total,
       difficulty: entry.difficulty,
     });
 
+    const resultLine = push.ok
+      ? "Submitted to online board."
+      : `Saved locally only. Upload failed (HTTP ${push.status}): ${escapeHtml(push.detail || "unknown")}`;
+
     root.innerHTML = `
       <div class="challenge-card">
         <h3>Run complete</h3>
         <p class="big-score">${entry.score} / ${entry.total}</p>
-        <p class="muted">${escapeHtml(entry.name)} · ${escapeHtml(entry.difficulty)} · ${
-      onlineOk ? "Submitted to online board." : "Saved on this browser only (Supabase not configured)."
-    }</p>
+        <p class="muted">${escapeHtml(entry.name)} · ${escapeHtml(entry.difficulty)} · ${resultLine}</p>
         <button type="button" class="btn" id="ch-again">Play again</button>
       </div>`;
     $("#ch-again", root).addEventListener("click", () => {
@@ -281,4 +401,10 @@
 
   showSetup();
   renderLeaderboard("easy");
+
+  setInterval(() => {
+    const on = lbRoot.querySelector(".lb-tab.is-on");
+    const d = on?.getAttribute("data-diff") || "easy";
+    renderLeaderboard(d);
+  }, 30000);
 })();

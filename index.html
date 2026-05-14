@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
       rel="stylesheet"
     />
     <link
@@ -35,6 +35,8 @@
         <nav aria-label="Primary">
           <ul>
             <li><a href="#hub">Knowledge Hub</a></li>
+            <li><a href="#glossary">Symbols</a></li>
+            <li><a href="#how-to-solve">How to solve</a></li>
             <li><a href="#models">Models lab</a></li>
             <li><a href="#challenge">Challenge</a></li>
             <li><a href="#play">Interact</a></li>
@@ -106,6 +108,102 @@
             <div class="filter-chips" id="hub-chips" role="group" aria-label="Filter by knowledge track"></div>
           </aside>
           <div id="topic-list" class="topic-list"></div>
+        </div>
+      </section>
+
+      <section class="section" id="glossary" aria-labelledby="glossary-title">
+        <div class="section-head">
+          <h2 id="glossary-title">Symbol &amp; convention glossary</h2>
+          <p>Same letters are reused across factors—always tie each symbol to a period length and payment timing before substituting numbers.</p>
+        </div>
+        <div class="glossary-wrap">
+          <table class="glossary-table">
+            <thead>
+              <tr>
+                <th scope="col">Symbol</th>
+                <th scope="col">Meaning</th>
+                <th scope="col">Typical units</th>
+                <th scope="col">Conventions on this site</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><em>P</em></td>
+                <td>Present worth (lump sum at <em>t</em> = 0 or at the valuation instant).</td>
+                <td>Currency (e.g., USD).</td>
+                <td>Single payment unless paired with an annuity factor.</td>
+              </tr>
+              <tr>
+                <td><em>F</em></td>
+                <td>Future worth—a one-time cash flow at the end of period <em>n</em>.</td>
+                <td>Currency.</td>
+                <td>Uses the same period index as <em>n</em> for <em>i</em>.</td>
+              </tr>
+              <tr>
+                <td><em>A</em></td>
+                <td>Uniform amount per period (“annuity” payment).</td>
+                <td>Currency per period.</td>
+                <td><strong>Ordinary annuity:</strong> payments at each <strong>end</strong> of period (default). <strong>Annuity due:</strong> payments at period <strong>beginning</strong>—shift one period or use textbook adjustment.</td>
+              </tr>
+              <tr>
+                <td><em>i</em></td>
+                <td>Interest (or discount) rate <strong>per interest period</strong> (not always per calendar year).</td>
+                <td>Dimensionless per period (enter 0.08 for 8%).</td>
+                <td>Discrete compounding unless a problem states continuous <em>r</em>.</td>
+              </tr>
+              <tr>
+                <td><em>n</em></td>
+                <td>Number of compounding (or payment) periods in the model.</td>
+                <td>Integer periods.</td>
+                <td>Must match the timing of <em>i</em> and of each cash flow arrow.</td>
+              </tr>
+              <tr>
+                <td><em>G</em></td>
+                <td>Arithmetic gradient step—cash flows increase by <em>G</em> each period after a base.</td>
+                <td>Currency per period.</td>
+                <td>Requires the textbook’s “0, <em>G</em>, 2<em>G</em>, …” pattern relative to tabulated (P/G) or (A/G) forms.</td>
+              </tr>
+              <tr>
+                <td><em>r</em>, <em>m</em></td>
+                <td>Nominal rate per year and compounding periods per year.</td>
+                <td><em>r</em> as decimal/year; <em>m</em> as count.</td>
+                <td>Periodic rate <em>i<sub>period</sub></em> = <em>r</em>/<em>m</em> when periods align with compounding months/quarters.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="how-to-solve" aria-labelledby="how-title">
+        <div class="section-head">
+          <h2 id="how-title">How to solve problems &amp; common pitfalls</h2>
+          <p>A compact workflow plus mistakes that cost points on exams.</p>
+        </div>
+        <ol class="steps-list">
+          <li><strong>Draw the cash-flow diagram.</strong> Mark the period length (week/month/year), then place every known inflow/outflow.</li>
+          <li><strong>Align <em>i</em> and <em>n</em>.</strong> Convert a nominal annual <em>r</em> with compounding <em>m</em> to the periodic rate that matches your payment spacing.</li>
+          <li><strong>Pick factors.</strong> Map each arrow to (P/F), (F/P), (P/A), (F/A), etc., or combine patterns (base + gradient).</li>
+          <li><strong>Compare alternatives fairly.</strong> Same study horizon, MARR, and tax/treatment assumptions unless the prompt says otherwise.</li>
+        </ol>
+        <div class="pitfalls-grid">
+          <div class="pitfall-card">
+            <h3>Ordinary vs annuity due</h3>
+            <p>
+              Tabulated (P/A) and (F/A) factors assume the <strong>first <em>A</em> occurs at the end of period 1</strong>. If the first cash flow is at <em>t</em> = 0, shift with one (F/P) step or use the “annuity due” adjustment from your text—do not plug values blindly.
+            </p>
+          </div>
+          <div class="pitfall-card">
+            <h3>MARR vs IRR</h3>
+            <p>
+              <strong>MARR</strong> is the stated hurdle for PW analysis. <strong>IRR</strong> is the rate that zeros NPW for a given cash-flow pattern. For <strong>mutually exclusive</strong> projects, ranking by IRR can disagree with NPW—use NPW (or incremental analysis) at the same MARR unless instructed otherwise.
+            </p>
+          </div>
+          <div class="pitfall-card">
+            <h3>Nominal vs effective</h3>
+            <p>
+              Compare financing or savings offers using <strong>effective</strong> rates when compounding frequencies differ. A lower quoted nominal rate with daily compounding can beat a higher nominal rate with annual compounding.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -207,24 +305,37 @@
           <div class="panel" aria-labelledby="calc-title">
             <h3 id="calc-title">Future value explorer</h3>
             <div id="fv-formula-katex" class="katex-block"></div>
-            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">
-              Discrete compounding with nominal annual <em>r</em> and <em>m</em> settlements per year.
+            <p class="panel-lead">
+              Discrete compounding with nominal annual <em>r</em> and <em>m</em> settlements per year. Use the number boxes for exact
+              values or drag the sliders.
             </p>
             <div class="slider-row">
-              <label><span>Principal P</span><span id="lab-p">1000</span></label>
-              <input id="in-p" type="range" min="100" max="10000" step="100" value="1000" />
+              <label><span>Principal <em>P</em></span><span id="lab-p">1000</span></label>
+              <div class="slider-input-row">
+                <input id="in-p" type="range" min="100" max="10000" step="100" value="1000" />
+                <input id="in-p-num" class="slider-num" type="number" min="100" max="10000" step="100" value="1000" aria-label="Principal P numeric" />
+              </div>
             </div>
             <div class="slider-row">
-              <label><span>Nominal annual r</span><span id="lab-r">8%</span></label>
-              <input id="in-r" type="range" min="0" max="20" step="0.5" value="8" />
+              <label><span>Nominal annual <em>r</em></span><span id="lab-r">8%</span></label>
+              <div class="slider-input-row">
+                <input id="in-r" type="range" min="0" max="20" step="0.5" value="8" />
+                <input id="in-r-num" class="slider-num" type="number" min="0" max="20" step="0.5" value="8" aria-label="Nominal r percent numeric" />
+              </div>
             </div>
             <div class="slider-row">
-              <label><span>Years t</span><span id="lab-t">5</span></label>
-              <input id="in-t" type="range" min="1" max="20" step="1" value="5" />
+              <label><span>Years <em>t</em></span><span id="lab-t">5</span></label>
+              <div class="slider-input-row">
+                <input id="in-t" type="range" min="1" max="20" step="1" value="5" />
+                <input id="in-t-num" class="slider-num" type="number" min="1" max="20" step="1" value="5" aria-label="Years t numeric" />
+              </div>
             </div>
             <div class="slider-row">
-              <label><span>Compounding periods per year m</span><span id="lab-m">12</span></label>
-              <input id="in-m" type="range" min="1" max="365" step="1" value="12" />
+              <label><span>Compounding periods per year <em>m</em></span><span id="lab-m">12</span></label>
+              <div class="slider-input-row">
+                <input id="in-m" type="range" min="1" max="365" step="1" value="12" />
+                <input id="in-m-num" class="slider-num" type="number" min="1" max="365" step="1" value="12" aria-label="m numeric" />
+              </div>
             </div>
             <div class="calc-output" aria-live="polite">
               Ending balance <em>F</em> ≈ <strong id="out-f">—</strong><br />
@@ -232,9 +343,11 @@
             </div>
           </div>
 
-          <div class="panel" aria-labelledby="loan-title">
+          <div class="panel panel-loan" aria-labelledby="loan-title">
             <h3 id="loan-title">Which financing offer is cheaper?</h3>
-            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">Compare effective annual borrowing costs when nominal quotes and m differ.</p>
+            <p class="panel-lead panel-lead-lg">
+              Compare effective annual borrowing costs when nominal quotes and compounding frequency differ.
+            </p>
             <div class="quiz-q" id="loan-scenario"></div>
             <div class="quiz-options" id="loan-options"></div>
             <div class="quiz-feedback" id="loan-feedback" aria-live="polite"></div>
@@ -243,16 +356,16 @@
 
           <div class="panel" aria-labelledby="quiz-title">
             <h3 id="quiz-title">NPW quick check</h3>
-            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">Mutually exclusive choice at a common MARR and horizon.</p>
+            <p class="panel-lead panel-lead-lg">Mutually exclusive choice at a common MARR and horizon.</p>
             <div class="quiz-q" id="mc-q"></div>
             <div class="quiz-options" id="mc-opts"></div>
             <div class="quiz-feedback" id="mc-fb" aria-live="polite"></div>
             <button type="button" class="btn" id="mc-next" style="margin-top: 12px">Next question</button>
           </div>
 
-          <div class="panel" aria-labelledby="flash-title">
+          <div class="panel panel-flash" aria-labelledby="flash-title">
             <h3 id="flash-title">Formula flip cards</h3>
-            <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--muted)">Tap a card to flip. Front: concept; back: typeset formula.</p>
+            <p class="panel-lead panel-lead-lg">Tap a card to flip. Front: concept; back: typeset formula.</p>
             <div class="flash-grid" id="flash-grid"></div>
           </div>
         </div>

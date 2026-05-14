@@ -121,7 +121,7 @@ window.CHALLENGE_BANK = {
     {
       id: "m02",
       prompt: "Find P for an annuity: P = A(P/A,i,n). With A = $250, i = 8% per year, n = 10, P is closest to (use tables or compute):",
-      promptMath: String.raw`P=A(P/A,8\\%,10)`,
+      promptMath: String.raw`P=A(P/A,8\%,10)`,
       choices: ["$1,677.53", "$2,500.00", "$1,200.00", "$3,000.00"],
       correctIndex: 0,
       solutionMath: String.raw`P=250\cdot\frac{1-(1.08)^{-10}}{0.08}\approx 250(6.7101)`,
@@ -214,7 +214,7 @@ window.CHALLENGE_BANK = {
       prompt: "Loan A: 9.0% nominal compounded daily (365). Loan B: 9.2% nominal compounded annually. For borrowing cost measured by EAR, choose:",
       choices: ["B is cheaper (lower EAR)", "A is cheaper", "Same EAR", "Cannot compare"],
       correctIndex: 0,
-      solutionMath: String.raw`i_{aA}=\left(1+\frac{0.09}{365}\right)^{365}-1\approx 9.42\\%,\quad i_{aB}=9.20\\%`,
+      solutionMath: String.raw`i_{aA}=\left(1+\frac{0.09}{365}\right)^{365}-1\approx 9.42\%,\quad i_{aB}=9.20\%`,
       solutionText: "Daily compounding pushes A’s effective rate above its nominal headline; B’s EAR equals 9.2% with annual compounding.",
     },
     {
@@ -227,7 +227,7 @@ window.CHALLENGE_BANK = {
         "NPW uses simple interest",
       ],
       correctIndex: 0,
-      solutionMath: String.raw`\mathrm{NPW}=-5000+1200(P/A,10\\%,5)+500(P/F,10\\%,5)`,
+      solutionMath: String.raw`\mathrm{NPW}=-5000+1200(P/A,10\%,5)+500(P/F,10\%,5)`,
       solutionText: "Break the pattern into a uniform series plus a single future receipt at the horizon.",
     },
     {
