@@ -6,7 +6,7 @@
     <title>ECON-ENG Hub — Engineering Economics</title>
     <meta
       name="description"
-      content="Engineering economics: knowledge tracks, interactive cash-flow lab, KaTeX formulas, and tiered challenge mode with leaderboards."
+      content="Engineering economics: knowledge tracks, interactive cash-flow lab, KaTeX formulas, and tiered challenge mode with a local leaderboard."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -283,8 +283,8 @@
         <div class="section-head">
           <h2 id="challenge-title">Challenge mode &amp; leaderboards</h2>
           <p>
-            Twelve questions per difficulty tier. After each answer you get a verdict plus a worked solution. Scores are stored locally by
-            default; optional Supabase keys enable one shared online board for everyone loading this page.
+            Twelve questions per difficulty tier. After each answer you get a verdict plus a worked solution. Scores and the sidebar
+            leaderboard are stored only in this browser (they are not sent to any server).
           </p>
         </div>
         <div class="challenge-layout">
@@ -384,7 +384,6 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
     <script defer src="js/knowledge.js"></script>
     <script defer src="js/challenge-data.js"></script>
-    <script defer src="js/remote.config.js"></script>
     <script defer src="js/visual-lab.js"></script>
     <script defer src="js/challenge.js"></script>
     <script defer src="js/app.js"></script>
