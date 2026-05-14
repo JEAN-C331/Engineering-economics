@@ -205,8 +205,8 @@
     });
     if (!rows) rows = `<tr><td colspan="5" style="text-align:center;color:var(--muted)">No scores yet.</td></tr>`;
 
-    const cfg = window.ECON_REMOTE || {};
-    const hasRemote = !!(cfg.supabaseUrl?.trim() && cfg.supabaseAnonKey?.trim());
+    const remoteCfg = typeof window.ECON_REMOTE !== "undefined" ? window.ECON_REMOTE : null;
+    const hasRemote = !!(remoteCfg?.supabaseUrl?.trim() && remoteCfg?.supabaseAnonKey?.trim());
     let diag = "";
     if (hasRemote) {
       if (remote.ok) {
@@ -221,7 +221,9 @@
     }
     const footHtml = hasRemote
       ? ""
-      : `<p class="lb-footnote"><strong>Shared rankings across computers:</strong> create a free Supabase project, add table <code>ee_scores</code>, enable anonymous read/insert (see <code>js/remote.config.js</code>), then paste URL + anon key. Until then, only this browser’s scores appear as <strong>device</strong>.</p>`;
+      : remoteCfg == null
+        ? `<p class="lb-footnote"><strong><code>js/remote.config.js</code> did not load.</strong> Check the browser address bar uses <code>http://localhost/…</code> (not <code>file:///</code>), open DevTools → Network, and confirm <code>js/remote.config.js</code> returns <strong>200</strong> (fix path or folder if 404).</p>`
+        : `<p class="lb-footnote"><strong>Online leaderboard is off.</strong> Device rows stay in each visitor’s browser only. Edit <code>js/remote.config.js</code>: set <code>supabaseUrl</code> (Project URL) and <code>supabaseAnonKey</code> (anon / publishable key) from Supabase → Settings → API, save, then hard-refresh this page.</p>`;
 
     lbRoot.innerHTML = `
       <div class="lb-toolbar">
