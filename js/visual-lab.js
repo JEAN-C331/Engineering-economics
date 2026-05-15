@@ -54,11 +54,11 @@
     const n = clamp(Number(nEl.value) || 4, 1, 12);
     const flows = readFlows(n);
     const W = 640;
-    const H = 220;
-    const padL = 36;
-    const padR = 24;
-    const padT = 36;
-    const padB = 44;
+    const H = 260;
+    const padL = 55;
+    const padR = 30;
+    const padT = 45;
+    const padB = 80;
     const baseY = H - padB;
     const x0 = padL;
     const x1 = W - padR;

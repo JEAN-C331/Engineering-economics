@@ -87,7 +87,7 @@
     });
     if (!rows) rows = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">No scores yet.</td></tr>`;
 
-    const footHtml = `<p class="lb-footnote">Rankings are saved only in <strong>this browser</strong> (localStorage). Clearing site data removes them.</p>`;
+    const footHtml = ``;
 
     lbRoot.innerHTML = `
       <div class="lb-toolbar">

@@ -442,7 +442,7 @@
       wrap.innerHTML = `
       <div class="flash-inner">
         <div class="flash-face flash-front">${escapeHtml(c.front)}</div>
-        <div class="flash-face flash-back katex-mini formula-sheet">${renderFormula(c.tex, true)}</div>
+        <div class="flash-face flash-back formula-sheet">${renderFormula(c.tex, true)}</div>
       </div>`;
       const flip = () => {
         wrap.classList.toggle("is-flipped");

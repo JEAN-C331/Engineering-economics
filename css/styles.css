@@ -1,19 +1,19 @@
 /* ECON-ENG Hub — Engineering Economics learner site */
 :root {
-  --bg: #12181f;
-  --bg-elev: #1a222c;
-  --surface: #222b36;
-  --border: #334050;
-  --text: #e4eaf0;
-  --muted: #9aa7b5;
-  --accent: #5bc4b0;
-  --accent-dim: #3d9d8c;
-  --warm: #d4a574;
-  --danger: #d67a65;
+  --bg: #0F172A;
+  --bg-elev: #1E293B;
+  --surface: #334155;
+  --border: #475569;
+  --text: #E2E8F0;
+  --muted: #94A3B8;
+  --accent: #38BDF8;
+  --accent-dim: #0EA5E9;
+  --warm: #06B6D4;
+  --danger: #F87171;
   --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --radius: 14px;
-  --shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+  --radius: 12px;
+  --shadow: 0 8px 24px rgba(56, 189, 248, 0.15);
 }
 
 *,
@@ -29,8 +29,8 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: radial-gradient(1100px 720px at 12% -8%, rgba(70, 120, 110, 0.14) 0%, transparent 52%),
-    radial-gradient(880px 560px at 96% 4%, rgba(90, 78, 120, 0.12) 0%, transparent 48%), var(--bg);
+  background: radial-gradient(1100px 720px at 12% -8%, rgba(56, 189, 248, 0.08) 0%, transparent 52%),
+    radial-gradient(880px 560px at 96% 4%, rgba(6, 182, 212, 0.06) 0%, transparent 48%), var(--bg);
   color: var(--text);
   line-height: 1.55;
   min-height: 100vh;
@@ -68,7 +68,7 @@ a:hover {
   top: 0;
   z-index: 50;
   backdrop-filter: blur(12px);
-  background: rgba(18, 24, 31, 0.88);
+  background: rgba(15, 23, 42, 0.95);
   border-bottom: 1px solid var(--border);
 }
 
@@ -92,11 +92,11 @@ a:hover {
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  background: linear-gradient(135deg, var(--accent), var(--warm));
   display: grid;
   place-items: center;
   font-weight: 800;
-  color: #062;
+  color: #fff;
   font-size: 0.85rem;
 }
 .brand h1 {
@@ -193,9 +193,9 @@ main {
   border-color: var(--accent-dim);
 }
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  background: linear-gradient(135deg, var(--accent), var(--warm));
   border: none;
-  color: #042;
+  color: #FFFFFF;
 }
 .btn-primary:hover {
   filter: brightness(1.06);
@@ -234,21 +234,21 @@ main {
   min-height: 148px;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid #b9c8dc;
-  background: linear-gradient(180deg, #f2f6fb 0%, #e8eff8 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .hero-slide h4 {
   margin: 0 0 8px;
   font-size: 0.98rem;
   font-weight: 700;
-  color: #1a2433;
+  color: var(--text);
 }
 .hero-slide p {
   margin: 0 0 10px;
   font-size: 0.88rem;
   line-height: 1.45;
-  color: #3a4a5e;
+  color: var(--muted);
 }
 .hero-slide-math {
   margin-top: 8px;
@@ -520,16 +520,18 @@ main {
   overflow-x: auto;
 }
 .formula-sheet {
-  background: linear-gradient(180deg, #fafcfe 0%, #eef2f8 100%);
-  border: 1px solid #c5d0e0;
-  color: #141820;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 .formula-sheet .katex {
-  color: #141820;
+  color: var(--text);
 }
 .formula-sheet .katex-display {
-  margin: 0.25em 0;
+  margin: 0.2em 0;
+  overflow: hidden;
 }
 .formula-box code {
   font-family: ui-monospace, "Cascadia Code", monospace;
@@ -538,7 +540,7 @@ main {
 .figure-wrap {
   margin: 14px 0;
   border-radius: 12px;
-  background: #121820;
+  background: var(--bg-elev);
   border: 1px solid var(--border);
   padding: 12px;
 }
@@ -735,12 +737,12 @@ main {
 
 .flash-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
 }
 .flash {
   perspective: 800px;
-  min-height: 148px;
+  min-height: 160px;
 }
 .flash-inner {
   position: relative;
@@ -759,30 +761,42 @@ main {
   backface-visibility: hidden;
   border-radius: 12px;
   border: 1px solid var(--border);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 10px;
-  font-size: 0.82rem;
+  padding: 8px;
+  font-size: 0.8rem;
+  overflow: hidden;
 }
 .flash-front {
-  background: linear-gradient(180deg, #f2f6fb 0%, #e6edf6 100%);
-  color: #1a2433;
-  border-color: #b9c8dc;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .flash-back {
-  background: linear-gradient(180deg, #f7f9fc 0%, #e9eef6 100%);
-  color: #141820;
-  border-color: #b8c5d8;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  color: var(--text);
+  border-color: var(--border);
   transform: rotateY(180deg);
-  font-size: 0.78rem;
-  line-height: 1.35;
-  overflow: auto;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .flash-back .katex {
-  color: #141820;
+  color: var(--text);
+  font-size: 0.85em;
+}
+.flash-back .katex-display {
+  margin: 0.2em 0;
+  white-space: normal;
+}
+
+/* 提高按钮对比度 */
+.btn-primary:hover {
+  filter: brightness(1.1);
 }
 
 .sources {
@@ -831,7 +845,7 @@ main {
   font-style: italic;
 }
 
-/* KaTeX on dark UI */
+/* KaTeX on light UI */
 .katex-display {
   margin: 0.45em 0;
   overflow-x: auto;
@@ -839,15 +853,13 @@ main {
 }
 .katex {
   color: var(--text);
+  font-size: 1.02em;
 }
 .katex-block {
   margin-bottom: 10px;
 }
-.katex-mini .katex {
-  font-size: 0.92em;
-}
-.katex-mini .katex-display {
-  margin: 0.15em 0;
+.flash-back {
+  overflow: visible;
 }
 
 /* Quantitative models lab */
@@ -932,7 +944,7 @@ main {
 }
 .viz-svg-wrap {
   border-radius: 12px;
-  background: #121820;
+  background: var(--bg-elev);
   border: 1px solid var(--border);
   padding: 10px;
   min-height: 200px;
