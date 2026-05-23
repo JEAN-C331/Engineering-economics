@@ -306,12 +306,14 @@
     {
       text: "Continuous compounding: if a continuous nominal rate r is quoted, a common effective annual form is:",
       options: [
-        { label: `${renderFormula(String.raw`i_a = e^r - 1`)} (verify notation in your text)`, ok: true },
-        { label: `${renderFormula(String.raw`i_a = r`)} always`, ok: false },
+        { label: `${renderFormula(String.raw`i_a = e^r - 1`)}`, ok: true },
+        { label: `${renderFormula(String.raw`i_a = r`)}`, ok: false },
         { label: `${renderFormula(String.raw`i_a = \ln(r)`)}`, ok: false },
       ],
       tex: String.raw`i_a = e^r - 1`,
-      explain: "Pair continuous compounding with the textbook's definition of r; many texts use i_a = e^r - 1 for the annual effective analogue.",
+      explain: "Pair continuous compounding with the textbook's definition of r; many texts use",
+      explainTex: String.raw`i_a = e^r - 1`,
+      explainAfter: "for the annual effective analogue.",
     },
   ];
   let scenIdx = 0;
@@ -324,7 +326,7 @@
     const mathHtml = s.tex ? `<div class="quiz-math">${renderFormula(s.tex, true)}</div>` : "";
     boxQ.innerHTML = `${escapeHtml(s.text)}${mathHtml}`;
     boxO.innerHTML = "";
-    fb.textContent = "";
+    fb.innerHTML = "";
     shuffleArray(s.options).forEach((opt) => {
       const b = document.createElement("button");
       b.type = "button";
@@ -332,7 +334,12 @@
       b.addEventListener("click", () => {
         [...boxO.children].forEach((c) => (c.disabled = true));
         b.classList.add(opt.ok ? "correct" : "wrong");
-        fb.textContent = opt.ok ? "Nice — " + s.explain : "Not quite — " + s.explain;
+        
+        if (s.explainTex) {
+          fb.innerHTML = `${opt.ok ? "Nice — " : "Not quite — "}${escapeHtml(s.explain)} <span class="quiz-math-inline">${renderFormula(s.explainTex, false)}</span> ${escapeHtml(s.explainAfter || "")}`;
+        } else {
+          fb.textContent = opt.ok ? "Nice — " + s.explain : "Not quite — " + s.explain;
+        }
       });
       boxO.appendChild(b);
     });

@@ -743,6 +743,14 @@ main {
 .quiz-math .katex {
   font-size: 1em;
 }
+.quiz-math-inline {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+.quiz-math-inline .katex {
+  font-size: 0.95em;
+}
 .quiz-options {
   display: flex;
   flex-direction: column;
