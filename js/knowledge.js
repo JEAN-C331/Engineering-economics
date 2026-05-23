@@ -9,7 +9,9 @@ window.KNOWLEDGE_TRACKS = {
   equiv: "Equivalence & factors",
   series: "Uniform series & gradients",
   rates: "Nominal & effective rates",
-  pw: "Present worth & decisions",
+  pw: "Present worth analysis",
+  annual: "Annual cash flow",
+  irr: "Rate of return analysis",
 };
 
 window.KNOWLEDGE_TOPICS = [
@@ -147,5 +149,113 @@ window.KNOWLEDGE_TOPICS = [
       "A perpetual end-of-period uniform series has a finite present worth when i{>}0. Used for endowments and long-horizon infrastructure approximations.",
     formulaLatex: String.raw`P=\frac{A}{i} \quad\text{(end-of-period perpetuity)}`,
     keywords: "endowment infinite scholarship",
+  },
+  {
+    id: "euac",
+    track: "annual",
+    title: "Equivalent Uniform Annual Cost (EUAC)",
+    summary:
+      "Converts all cash flows to an equivalent uniform annual amount. EUAC combines initial cost, salvage value, and annual operating costs into a single annual figure for comparison.",
+    formulaLatex: String.raw`\text{EUAC} = P(A/P,i,n) - S(A/F,i,n) + \text{Annual Costs}`,
+    keywords: "annual cost comparison equivalent uniform",
+  },
+  {
+    id: "euab",
+    track: "annual",
+    title: "Equivalent Uniform Annual Benefit (EUAB)",
+    summary:
+      "The uniform annual equivalent of all benefits from a project, including revenues and salvage value. EUAB - EUAC gives the annual worth of an alternative.",
+    formulaLatex: String.raw`\text{EUAB} = R + S(A/F,i,n) \quad\text{where } R=\text{annual revenue}`,
+    keywords: "annual benefit revenue worth",
+  },
+  {
+    id: "capital-recovery",
+    track: "annual",
+    title: "Capital Recovery Cost",
+    summary:
+      "The annual cost to recover an initial investment considering salvage value. Three equivalent methods: EUAC = P(A/P,i,n) - S(A/F,i,n), or = (P-S)(A/P,i,n) + Si, or = P(A/P,i,n) + S(A/P,i,n) - S.",
+    formulaLatex: String.raw`\text{CR} = P(A/P,i,n) - S(A/F,i,n) = (P-S)(A/P,i,n) + Si`,
+    keywords: "capital recovery depreciation investment",
+  },
+  {
+    id: "loan-amortization",
+    track: "annual",
+    title: "Loan Amortization",
+    summary:
+      "The process of paying off a loan through regular payments covering both principal and interest. Early payments are mostly interest; later payments are mostly principal.",
+    formulaLatex: String.raw`A = P(A/P,i,n) \quad\text{Payment = Interest + Principal}`,
+    keywords: "loan payment schedule interest principal",
+  },
+  {
+    id: "annual-worth",
+    track: "annual",
+    title: "Annual Worth (AW) Analysis",
+    summary:
+      "Converts all cash flows to an equivalent uniform annual amount. AW = EUAB - EUAC. Positive AW means the alternative is acceptable at MARR.",
+    formulaLatex: String.raw`\text{AW} = \text{EUAB} - \text{EUAC} = \text{NPW}(A/P,i,n)`,
+    keywords: "annual worth comparison alternative",
+  },
+  {
+    id: "different-lives-annual",
+    track: "annual",
+    title: "Different Lives with Annual Worth",
+    summary:
+      "Annual worth analysis eliminates the need for a common study period when alternatives have different lives. Compare AW directly without LCM assumptions.",
+    formulaLatex: String.raw`\text{Compare AW at MARR for each alternative's own life.}`,
+    keywords: "comparison different lives LCM repeatability",
+  },
+  {
+    id: "irr",
+    track: "irr",
+    title: "Internal Rate of Return (IRR)",
+    summary:
+      "The interest rate at which the present worth of benefits equals the present worth of costs (NPW = 0). IRR represents the project's intrinsic rate of return.",
+    formulaLatex: String.raw`\text{PW(Benefits)} - \text{PW(Costs)} = 0 \quad\text{at IRR}`,
+    keywords: "rate of return internal interest rate",
+  },
+  {
+    id: "irr-decision-rule",
+    track: "irr",
+    title: "IRR Decision Rule",
+    summary:
+      "If IRR > MARR, accept the investment (earns more than minimum required). If IRR < MARR, reject. If IRR = MARR, indifferent.",
+    formulaLatex: String.raw`\text{Accept if } \text{IRR} > \text{MARR}`,
+    keywords: "decision accept reject hurdle rate",
+  },
+  {
+    id: "trial-error-irr",
+    track: "irr",
+    title: "Trial-and-Error Method for IRR",
+    summary:
+      "Guess an interest rate, calculate NPW, adjust based on sign: if NPW > 0 try higher rate, if NPW < 0 try lower rate, then interpolate.",
+    formulaLatex: String.raw`\text{Interpolate: } i^* = i_L + \frac{|\text{NPW}_L|}{|\text{NPW}_L| + |\text{NPW}_H|}(i_H - i_L)`,
+    keywords: "trial error interpolation guess rate",
+  },
+  {
+    id: "incremental-analysis",
+    track: "irr",
+    title: "Incremental Rate of Return Analysis",
+    summary:
+      "When comparing mutually exclusive alternatives, analyze the incremental cash flow (higher cost - lower cost). Accept the higher-cost alternative if IRR on increment >= MARR.",
+    formulaLatex: String.raw`\Delta\text{IRR} = \text{IRR on } (\text{Alt}_H - \text{Alt}_L)`,
+    keywords: "incremental delta analysis alternatives",
+  },
+  {
+    id: "incremental-decision",
+    track: "irr",
+    title: "Incremental Analysis Decision Rule",
+    summary:
+      "Compare alternatives by initial cost order. Calculate IRR on the incremental investment. If ΔIRR >= MARR, choose higher-cost alternative; otherwise choose lower-cost.",
+    formulaLatex: String.raw`\text{If } \Delta\text{IRR} \ge \text{MARR}, \text{ choose higher-cost alt}`,
+    keywords: "mutually exclusive comparison ranking",
+  },
+  {
+    id: "graphical-irr",
+    track: "irr",
+    title: "Graphical Interpretation of IRR",
+    summary:
+      "Plot NPW against interest rate. IRR is where the curve crosses the x-axis (NPW=0). For conventional cash flows, the curve slopes downward.",
+    formulaLatex: String.raw`\text{IRR is the x-intercept of } \text{NPW}(i) = 0`,
+    keywords: "graph npw interest rate curve",
   },
 ];

@@ -161,13 +161,79 @@
                 <td><em>G</em></td>
                 <td>Arithmetic gradient step—cash flows increase by <em>G</em> each period after a base.</td>
                 <td>Currency per period.</td>
-                <td>Requires the textbook’s “0, <em>G</em>, 2<em>G</em>, …” pattern relative to tabulated (P/G) or (A/G) forms.</td>
+                <td>Requires the textbook's "0, <em>G</em>, 2<em>G</em>, …" pattern relative to tabulated (P/G) or (A/G) forms.</td>
               </tr>
               <tr>
                 <td><em>r</em>, <em>m</em></td>
-                <td>Nominal rate per year and compounding periods per year.</td>
+                <td>Nominal rate per year (<em>r</em>) and compounding periods per year (<em>m</em>).</td>
                 <td><em>r</em> as decimal/year; <em>m</em> as count.</td>
                 <td>Periodic rate <em>i<sub>period</sub></em> = <em>r</em>/<em>m</em> when periods align with compounding months/quarters.</td>
+              </tr>
+              <tr>
+                <td><em>S</em></td>
+                <td>Salvage value—estimated resale value at end of asset life.</td>
+                <td>Currency.</td>
+                <td>Treated as inflow at period <em>n</em> unless specified otherwise.</td>
+              </tr>
+              <tr>
+                <td><em>t</em></td>
+                <td>Time index—period number in cash flow timeline.</td>
+                <td>Integer period index (0, 1, 2, ..., <em>n</em>).</td>
+                <td><em>t</em> = 0 is the present; <em>t</em> = <em>n</em> is the final period.</td>
+              </tr>
+              <tr>
+                <td><em>NCF</em></td>
+                <td>Net cash flow—receipts minus disbursements in a period.</td>
+                <td>Currency per period.</td>
+                <td>Positive = inflow (receipt); Negative = outflow (disbursement).</td>
+              </tr>
+              <tr>
+                <td><em>NPW</em> / <em>NPV</em></td>
+                <td>Net Present Worth / Net Present Value.</td>
+                <td>Currency.</td>
+                <td>Sum of discounted cash flows at MARR. Accept if NPW ≥ 0.</td>
+              </tr>
+              <tr>
+                <td><em>AW</em></td>
+                <td>Annual Worth—equivalent uniform annual amount.</td>
+                <td>Currency per period.</td>
+                <td>AW = EUAB - EUAC. Accept if AW ≥ 0.</td>
+              </tr>
+              <tr>
+                <td><em>EUAC</em></td>
+                <td>Equivalent Uniform Annual Cost.</td>
+                <td>Currency per period.</td>
+                <td>Converts all costs to equivalent uniform annual amount.</td>
+              </tr>
+              <tr>
+                <td><em>EUAB</em></td>
+                <td>Equivalent Uniform Annual Benefit.</td>
+                <td>Currency per period.</td>
+                <td>Converts all benefits to equivalent uniform annual amount.</td>
+              </tr>
+              <tr>
+                <td><em>CR</em></td>
+                <td>Capital Recovery—annual cost to recover initial investment.</td>
+                <td>Currency per period.</td>
+                <td>CR = <em>P</em>(A/P,<em>i</em>,<em>n</em>) - <em>S</em>(A/F,<em>i</em>,<em>n</em>).</td>
+              </tr>
+              <tr>
+                <td><em>MARR</em></td>
+                <td>Minimum Attractive Rate of Return.</td>
+                <td>Dimensionless per period (decimal).</td>
+                <td>Hurdle rate for accept/reject decisions. Used as <em>i</em> in PW/AW analysis.</td>
+              </tr>
+              <tr>
+                <td><em>IRR</em></td>
+                <td>Internal Rate of Return.</td>
+                <td>Dimensionless per period (decimal or percent).</td>
+                <td>Interest rate where NPW = 0. Accept if IRR ≥ MARR.</td>
+              </tr>
+              <tr>
+                <td><em>ΔIRR</em></td>
+                <td>Incremental Internal Rate of Return.</td>
+                <td>Dimensionless per period (decimal or percent).</td>
+                <td>IRR on incremental cash flow between alternatives. Accept increment if ΔIRR ≥ MARR.</td>
               </tr>
             </tbody>
           </table>
@@ -304,38 +370,25 @@
         <div class="play-grid">
           <div class="panel" aria-labelledby="calc-title">
             <h3 id="calc-title">Future value explorer</h3>
-            <div id="fv-formula-katex" class="katex-block"></div>
+            <div id="fv-formula-katex" class="katex-block fv-formula"></div>
             <p class="panel-lead">
-              Discrete compounding with nominal annual <em>r</em> and <em>m</em> settlements per year. Use the number boxes for exact
-              values or drag the sliders.
+              Discrete compounding with nominal annual <em>r</em> and <em>m</em> settlements per year.
             </p>
-            <div class="slider-row">
+            <div class="input-row">
               <label><span>Principal <em>P</em></span><span id="lab-p">1000</span></label>
-              <div class="slider-input-row">
-                <input id="in-p" type="range" min="100" max="10000" step="100" value="1000" />
-                <input id="in-p-num" class="slider-num" type="number" min="100" max="10000" step="100" value="1000" aria-label="Principal P numeric" />
-              </div>
+              <input id="in-p-num" class="calc-input" type="number" min="100" max="10000" step="100" value="1000" aria-label="Principal P" />
             </div>
-            <div class="slider-row">
+            <div class="input-row">
               <label><span>Nominal annual <em>r</em></span><span id="lab-r">8%</span></label>
-              <div class="slider-input-row">
-                <input id="in-r" type="range" min="0" max="20" step="0.5" value="8" />
-                <input id="in-r-num" class="slider-num" type="number" min="0" max="20" step="0.5" value="8" aria-label="Nominal r percent numeric" />
-              </div>
+              <input id="in-r-num" class="calc-input" type="number" min="0" max="20" step="0.5" value="8" aria-label="Nominal rate r percent" />
             </div>
-            <div class="slider-row">
+            <div class="input-row">
               <label><span>Years <em>t</em></span><span id="lab-t">5</span></label>
-              <div class="slider-input-row">
-                <input id="in-t" type="range" min="1" max="20" step="1" value="5" />
-                <input id="in-t-num" class="slider-num" type="number" min="1" max="20" step="1" value="5" aria-label="Years t numeric" />
-              </div>
+              <input id="in-t-num" class="calc-input" type="number" min="1" max="20" step="1" value="5" aria-label="Years t" />
             </div>
-            <div class="slider-row">
+            <div class="input-row">
               <label><span>Compounding periods per year <em>m</em></span><span id="lab-m">12</span></label>
-              <div class="slider-input-row">
-                <input id="in-m" type="range" min="1" max="365" step="1" value="12" />
-                <input id="in-m-num" class="slider-num" type="number" min="1" max="365" step="1" value="12" aria-label="m numeric" />
-              </div>
+              <input id="in-m-num" class="calc-input" type="number" min="1" max="365" step="1" value="12" aria-label="Compounding periods m" />
             </div>
             <div class="calc-output" aria-live="polite">
               Ending balance <em>F</em> ≈ <strong id="out-f">—</strong><br />

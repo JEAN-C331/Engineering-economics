@@ -571,6 +571,41 @@ main {
   font-size: 1.05rem;
 }
 
+.input-row {
+  margin-bottom: 14px;
+}
+.input-row label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.calc-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+.calc-input:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.35);
+  outline-offset: 1px;
+}
+.fv-formula {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+}
+.fv-formula .katex {
+  font-size: 0.85em;
+}
+.fv-formula .katex-display {
+  overflow: hidden !important;
+}
 .slider-row {
   margin-bottom: 14px;
 }
@@ -700,6 +735,13 @@ main {
   font-size: 1.05rem;
   margin-bottom: 12px;
   line-height: 1.45;
+}
+.quiz-math {
+  margin: 12px 0;
+  overflow: hidden;
+}
+.quiz-math .katex {
+  font-size: 1em;
 }
 .quiz-options {
   display: flex;
@@ -848,8 +890,27 @@ main {
 /* KaTeX on light UI */
 .katex-display {
   margin: 0.45em 0;
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-y: hidden;
   max-width: 100%;
+}
+.katex-display::-webkit-scrollbar {
+  display: none;
+}
+.katex-scroll-up,
+.katex-scroll-down,
+.katex-scroll-left,
+.katex-scroll-right,
+.katex .scroll-btn,
+.katex .navigation-btn,
+.katex-display > button,
+.katex-display button,
+.katex button,
+.katex > button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 .katex {
   color: var(--text);

@@ -213,10 +213,6 @@
   initHeroCarousel();
 
   /* ----- FV + EAR calculator ----- */
-  const inP = $("#in-p");
-  const inR = $("#in-r");
-  const inT = $("#in-t");
-  const inM = $("#in-m");
   const inPNum = $("#in-p-num");
   const inRNum = $("#in-r-num");
   const inTNum = $("#in-t-num");
@@ -236,18 +232,26 @@
     return (100 * x).toLocaleString(undefined, { maximumFractionDigits: 3 }) + "%";
   }
 
+  function clampNum(val, min, max, step, roundM) {
+    let x = Number(val);
+    if (!Number.isFinite(x)) x = min;
+    x = Math.min(max, Math.max(min, x));
+    if (roundM) return Math.round(x);
+    return Math.round(x / step) * step;
+  }
+
   function recalcFv() {
-    if (!inP || !inR || !inT || !inM || !labP || !outF) return;
-    const P = Number(inP.value);
-    const r = Number(inR.value) / 100;
-    const t = Number(inT.value);
-    const m = Math.max(1, Math.round(Number(inM.value)));
-    if (inPNum) inPNum.value = String(P);
-    if (inRNum) inRNum.value = String(Number(inR.value).toFixed(1));
-    if (inTNum) inTNum.value = String(t);
-    if (inMNum) inMNum.value = String(m);
+    if (!inPNum || !inRNum || !inTNum || !inMNum || !labP || !outF) return;
+    const P = clampNum(inPNum.value, 100, 10000, 100, false);
+    const r = clampNum(inRNum.value, 0, 20, 0.5, false) / 100;
+    const t = clampNum(inTNum.value, 1, 20, 1, true);
+    const m = clampNum(inMNum.value, 1, 365, 1, true);
+    inPNum.value = String(P);
+    inRNum.value = String(r * 100);
+    inTNum.value = String(t);
+    inMNum.value = String(m);
     labP.textContent = fmtMoney(P);
-    labR.textContent = `${Number(inR.value).toFixed(1)}%`;
+    labR.textContent = `${(r * 100).toFixed(1)}%`;
     labT.textContent = String(t);
     labM.textContent = String(m);
     const F = P * Math.pow(1 + r / m, m * t);
@@ -256,35 +260,9 @@
     outIa.textContent = fmtPct(ia);
   }
 
-  function bindFvPair(range, num, opts) {
-    if (!range || !num) return;
-    const { min, max, step, roundM, decimals } = opts;
-    const clamp = (v) => {
-      let x = Number(v);
-      if (!Number.isFinite(x)) x = Number(range.value);
-      x = Math.min(max, Math.max(min, x));
-      if (roundM) return Math.round(x);
-      return Math.round(x / step) * step;
-    };
-    range.addEventListener("input", () => {
-      const rv = Number(range.value);
-      if (decimals != null) num.value = rv.toFixed(decimals);
-      else num.value = String(roundM ? Math.round(rv) : Math.round(rv / step) * step);
-      recalcFv();
-    });
-    num.addEventListener("change", () => {
-      const x = clamp(num.value);
-      range.value = String(x);
-      if (decimals != null) num.value = x.toFixed(decimals);
-      else num.value = String(x);
-      recalcFv();
-    });
-  }
-
-  bindFvPair(inP, inPNum, { min: 100, max: 10000, step: 100, roundM: false });
-  bindFvPair(inR, inRNum, { min: 0, max: 20, step: 0.5, roundM: false, decimals: 1 });
-  bindFvPair(inT, inTNum, { min: 1, max: 20, step: 1, roundM: true });
-  bindFvPair(inM, inMNum, { min: 1, max: 365, step: 1, roundM: true });
+  [inPNum, inRNum, inTNum, inMNum].forEach((el) => {
+    if (el) el.addEventListener("input", recalcFv);
+  });
 
   recalcFv();
 
@@ -311,8 +289,9 @@
         { label: "B is cheaper (lower EAR)", ok: false },
         { label: "They are exactly equal", ok: false },
       ],
+      tex: String.raw`i_a = \left(1 + \frac{r}{m}\right)^m - 1`,
       explain:
-        "Compute i_a = (1 + r/m)^m − 1 for each. Monthly compounding on A increases its effective rate more than the smaller nominal suggests.",
+        "Compute effective annual rate for each. Monthly compounding on A increases its effective rate more than the smaller nominal suggests.",
     },
     {
       text: "Loan A: 9.0% nominal, compounded daily (365). Loan B: 9.2% nominal, compounded annually. Which is cheaper?",
@@ -327,11 +306,12 @@
     {
       text: "Continuous compounding: if a continuous nominal rate r is quoted, a common effective annual form is:",
       options: [
-        { label: "i_a = e^r − 1 (verify notation in your text)", ok: true },
-        { label: "i_a = r always", ok: false },
-        { label: "i_a = ln(r)", ok: false },
+        { label: `${renderFormula(String.raw`i_a = e^r - 1`)} (verify notation in your text)`, ok: true },
+        { label: `${renderFormula(String.raw`i_a = r`)} always`, ok: false },
+        { label: `${renderFormula(String.raw`i_a = \ln(r)`)}`, ok: false },
       ],
-      explain: "Pair continuous compounding with the textbook’s definition of r; many texts use i_a = e^r − 1 for the annual effective analogue.",
+      tex: String.raw`i_a = e^r - 1`,
+      explain: "Pair continuous compounding with the textbook's definition of r; many texts use i_a = e^r - 1 for the annual effective analogue.",
     },
   ];
   let scenIdx = 0;
@@ -341,13 +321,14 @@
     const boxO = $("#loan-options");
     const fb = $("#loan-feedback");
     const s = scenarios[scenIdx % scenarios.length];
-    boxQ.textContent = s.text;
+    const mathHtml = s.tex ? `<div class="quiz-math">${renderFormula(s.tex, true)}</div>` : "";
+    boxQ.innerHTML = `${escapeHtml(s.text)}${mathHtml}`;
     boxO.innerHTML = "";
     fb.textContent = "";
     shuffleArray(s.options).forEach((opt) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.textContent = opt.label;
+      b.innerHTML = opt.label;
       b.addEventListener("click", () => {
         [...boxO.children].forEach((c) => (c.disabled = true));
         b.classList.add(opt.ok ? "correct" : "wrong");
