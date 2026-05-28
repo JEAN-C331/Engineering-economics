@@ -879,14 +879,215 @@
       const query = e.target.value.toLowerCase().trim();
       
       if (query.length >= 2) {
-        const knowledgeSearch = document.getElementById('topic-search');
-        if (knowledgeSearch) {
-          knowledgeSearch.value = query;
-          knowledgeSearch.dispatchEvent(new Event('input'));
-        }
-        
-        document.getElementById('hub').scrollIntoView({ behavior: 'smooth' });
+        performGlobalSearch(query);
+      } else {
+        resetAllSearch();
       }
     });
+    
+    // Handle Enter key for direct navigation
+    globalSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length >= 2) {
+          performGlobalSearch(query, true);
+        }
+      }
+    });
+  }
+
+  function performGlobalSearch(query, forceNavigate = false) {
+    let bestMatch = null;
+    let bestScore = 0;
+    
+    // 1. Search Knowledge Hub topics
+    const knowledgeResult = searchKnowledgeHub(query);
+    if (knowledgeResult.score > bestScore) {
+      bestScore = knowledgeResult.score;
+      bestMatch = { type: 'knowledge', element: knowledgeResult.element, section: 'hub' };
+    }
+    
+    // 2. Search Glossary (Symbols)
+    const glossaryResult = searchGlossary(query);
+    if (glossaryResult.score > bestScore) {
+      bestScore = glossaryResult.score;
+      bestMatch = { type: 'glossary', element: glossaryResult.element, section: 'glossary' };
+    }
+    
+    // 3. Search Calculators
+    const calcResult = searchCalculators(query);
+    if (calcResult.score > bestScore) {
+      bestScore = calcResult.score;
+      bestMatch = { type: 'calculator', element: calcResult.element, section: 'calculators', tab: calcResult.tab };
+    }
+    
+    // 4. Quick keywords for sections
+    const sectionKeywords = {
+      'hub': ['knowledge', 'topic', 'learn', 'formula', 'perpetuity', 'EAR', 'P/F', 'P/A', 'F/A'],
+      'glossary': ['symbol', 'glossary', 'definition', 'meaning', 'MARR', 'IRR', 'NPW', 'EUAC', 'AW'],
+      'calculators': ['calculate', 'calculator', 'present', 'future', 'annual', 'worth', 'factor'],
+      'models': ['model', 'cash', 'flow', 'timeline', 'compound', 'simple'],
+      'challenge': ['challenge', 'quiz', 'test', 'practice', 'question'],
+      'play': ['play', 'interact', 'flash', 'card', 'game', 'loan']
+    };
+    
+    for (const [section, keywords] of Object.entries(sectionKeywords)) {
+      for (const keyword of keywords) {
+        if (query.includes(keyword.toLowerCase())) {
+          const score = (forceNavigate ? 10 : 5);
+          if (score > bestScore) {
+            bestScore = score;
+            bestMatch = { type: 'section', element: null, section: section };
+          }
+        }
+      }
+    }
+    
+    // Always update Knowledge Hub search
+    const knowledgeSearch = document.getElementById('topic-search');
+    if (knowledgeSearch) {
+      knowledgeSearch.value = query;
+      knowledgeSearch.dispatchEvent(new Event('input'));
+    }
+    
+    // Always update Glossary search
+    const glossarySearch = document.getElementById('glossary-search');
+    if (glossarySearch) {
+      glossarySearch.value = query;
+      glossarySearch.dispatchEvent(new Event('input'));
+    }
+    
+    // Navigate to the best match
+    if (bestMatch && (bestScore >= 5 || forceNavigate)) {
+      navigateToMatch(bestMatch);
+    } else if (bestScore > 0) {
+      document.getElementById('hub').scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function searchKnowledgeHub(query) {
+    let bestEl = null;
+    let bestScore = 0;
+    
+    const cards = document.querySelectorAll('.topic-card');
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      let score = 0;
+      
+      // Exact matches get higher scores
+      if (text.includes(query)) score += 3;
+      
+      // Word matches
+      const words = query.split(/\s+/);
+      words.forEach(word => {
+        if (word.length > 1 && text.includes(word)) score += 2;
+      });
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestEl = card;
+      }
+    });
+    
+    return { element: bestEl, score: bestScore };
+  }
+
+  function searchGlossary(query) {
+    let bestEl = null;
+    let bestScore = 0;
+    
+    const rows = document.querySelectorAll('.glossary-table tbody tr');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const searchText = row.dataset.searchText?.toLowerCase() || '';
+      let score = 0;
+      
+      // Exact matches
+      if (text.includes(query) || searchText.includes(query)) score += 4;
+      
+      // Word matches
+      const words = query.split(/\s+/);
+      words.forEach(word => {
+        if (word.length > 1 && (text.includes(word) || searchText.includes(word))) score += 2;
+      });
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestEl = row;
+      }
+    });
+    
+    return { element: bestEl, score: bestScore };
+  }
+
+  function searchCalculators(query) {
+    let bestEl = null;
+    let bestScore = 0;
+    let bestTab = null;
+    
+    const calculatorTypes = [
+      { tab: 'pw', keywords: ['present', 'worth', 'pw', 'present worth', 'future', 'f/p', 'p/f'] },
+      { tab: 'aw', keywords: ['annual', 'worth', 'aw', 'annual worth', 'capital', 'recovery'] },
+      { tab: 'irr', keywords: ['irr', 'internal', 'return', 'rate', 'npw=0'] },
+      { tab: 'euac', keywords: ['euac', 'uniform', 'cost', 'annual cost'] },
+      { tab: 'factors', keywords: ['factor', 'interest', 'table', 'p/a', 'f/a', 'a/p', 'a/f'] }
+    ];
+    
+    for (const calc of calculatorTypes) {
+      for (const keyword of calc.keywords) {
+        if (query.includes(keyword.toLowerCase())) {
+          const score = 6;
+          if (score > bestScore) {
+            bestScore = score;
+            bestEl = document.getElementById(`calc-${calc.tab}`);
+            bestTab = calc.tab;
+          }
+        }
+      }
+    }
+    
+    return { element: bestEl, score: bestScore, tab: bestTab };
+  }
+
+  function navigateToMatch(match) {
+    // First scroll to the section
+    const section = document.getElementById(match.section);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Handle specific types
+    setTimeout(() => {
+      if (match.type === 'calculator' && match.tab) {
+        const tab = document.querySelector(`.calc-tab[data-calc="${match.tab}"]`);
+        if (tab) tab.click();
+      }
+      
+      if (match.element) {
+        match.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        match.element.classList.add('highlighted');
+        setTimeout(() => {
+          match.element.classList.remove('highlighted');
+        }, 2000);
+        
+        if (match.element.tagName === 'DETAILS') {
+          match.element.open = true;
+        }
+      }
+    }, 500);
+  }
+
+  function resetAllSearch() {
+    const knowledgeSearch = document.getElementById('topic-search');
+    if (knowledgeSearch) {
+      knowledgeSearch.value = '';
+      knowledgeSearch.dispatchEvent(new Event('input'));
+    }
+    
+    const glossarySearch = document.getElementById('glossary-search');
+    if (glossarySearch) {
+      glossarySearch.value = '';
+      glossarySearch.dispatchEvent(new Event('input'));
+    }
   }
 })();

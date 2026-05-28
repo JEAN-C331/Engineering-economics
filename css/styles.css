@@ -1682,3 +1682,40 @@ body.theme-dark .cfd-cf::placeholder {
 .hidden {
   display: none !important;
 }
+
+/* ========== HIGHLIGHT FOR SEARCH ========== */
+.highlighted {
+  animation: search-highlight 2s ease-out;
+}
+
+@keyframes search-highlight {
+  0% {
+    background-color: rgba(37, 99, 235, 0.3);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    background-color: rgba(37, 99, 235, 0.15);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+body.theme-dark .highlighted {
+  animation: search-highlight-dark 2s ease-out;
+}
+
+@keyframes search-highlight-dark {
+  0% {
+    background-color: rgba(56, 189, 248, 0.3);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+  }
+  50% {
+    background-color: rgba(56, 189, 248, 0.15);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
