@@ -19,6 +19,7 @@
       href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
       crossorigin="anonymous"
     />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
@@ -93,10 +94,6 @@
       <section class="section" id="hub" aria-labelledby="hub-title">
         <div class="section-head">
           <h2 id="hub-title">Knowledge Hub</h2>
-          <p>
-            Search by keyword, then filter by <strong>knowledge track</strong> (not by slide deck). Expand a card for concise notes and
-            typeset formulas.
-          </p>
         </div>
         <div class="hub-layout">
           <aside class="hub-sidebar" aria-label="Search and filters">
@@ -129,7 +126,6 @@
       <section class="section" id="glossary" aria-labelledby="glossary-title">
         <div class="section-head">
           <h2 id="glossary-title">Symbol &amp; convention glossary</h2>
-          <p>Same letters are reused across factors—always tie each symbol to a period length and payment timing before substituting numbers.</p>
           <div class="glossary-search">
             <input type="search" id="glossary-search" placeholder="Search symbols and definitions..." aria-label="Search glossary">
           </div>
@@ -329,7 +325,6 @@
       <section class="section" id="calculators" aria-labelledby="calc-title">
         <div class="section-head">
           <h2 id="calc-title">Engineering Economics Calculators</h2>
-          <p>All-in-one toolset for common calculations, with step-by-step explanations.</p>
         </div>
         <div class="panel">
           <div class="calc-tabs" id="calc-tabs">
@@ -342,117 +337,167 @@
 
           <!-- PW Calculator -->
           <div class="calc-panel is-visible" id="calc-pw">
-            <h3 style="margin-top: 0">Present Worth Calculator</h3>
-            <div class="input-row">
-              <label>Future Value (F)</label>
-              <input id="pw-calc-f" type="number" value="10000" step="100">
+            <div class="calc-layout">
+              <div class="calc-form">
+                <h3 style="margin-top: 0">Present Worth Calculator</h3>
+                <div class="input-row">
+                  <label>Future Value (F)</label>
+                  <input id="pw-calc-f" type="number" value="10000" step="100">
+                </div>
+                <div class="input-row">
+                  <label>Interest Rate (i) %</label>
+                  <input id="pw-calc-i" type="number" value="8" step="0.1">
+                </div>
+                <div class="input-row">
+                  <label>Periods (n)</label>
+                  <input id="pw-calc-n" type="number" value="5" step="1">
+                </div>
+                <button class="btn btn-primary" id="pw-calc-btn">Calculate PW</button>
+                <div class="calc-output" id="pw-calc-result"></div>
+                <div class="calc-steps" id="pw-calc-steps" style="display:none"></div>
+              </div>
+              <div class="calc-illustration">
+                <div class="illustration-card chart-container">
+                  <canvas id="pwChart"></canvas>
+                  <p class="illustration-text">Chart showing how present value changes over time.</p>
+                </div>
+              </div>
             </div>
-            <div class="input-row">
-              <label>Interest Rate (i) %</label>
-              <input id="pw-calc-i" type="number" value="8" step="0.1">
-            </div>
-            <div class="input-row">
-              <label>Periods (n)</label>
-              <input id="pw-calc-n" type="number" value="5" step="1">
-            </div>
-            <button class="btn btn-primary" id="pw-calc-btn">Calculate PW</button>
-            <div class="calc-output" id="pw-calc-result"></div>
-            <div class="calc-steps" id="pw-calc-steps" style="display:none"></div>
           </div>
 
           <!-- AW Calculator -->
           <div class="calc-panel" id="calc-aw">
-            <h3 style="margin-top: 0">Annual Worth Calculator</h3>
-            <div class="input-row">
-              <label>Present Worth (P)</label>
-              <input id="aw-calc-p" type="number" value="50000" step="100">
+            <div class="calc-layout">
+              <div class="calc-form">
+                <h3 style="margin-top: 0">Annual Worth Calculator</h3>
+                <div class="input-row">
+                  <label>Present Worth (P)</label>
+                  <input id="aw-calc-p" type="number" value="50000" step="100">
+                </div>
+                <div class="input-row">
+                  <label>Salvage Value (S)</label>
+                  <input id="aw-calc-s" type="number" value="10000" step="100">
+                </div>
+                <div class="input-row">
+                  <label>Interest Rate (i) %</label>
+                  <input id="aw-calc-i" type="number" value="12" step="0.1">
+                </div>
+                <div class="input-row">
+                  <label>Periods (n)</label>
+                  <input id="aw-calc-n" type="number" value="8" step="1">
+                </div>
+                <button class="btn btn-primary" id="aw-calc-btn">Calculate AW</button>
+                <div class="calc-output" id="aw-calc-result"></div>
+                <div class="calc-steps" id="aw-calc-steps" style="display:none"></div>
+              </div>
+              <div class="calc-illustration">
+                <div class="illustration-card chart-container">
+                  <canvas id="awChart"></canvas>
+                  <p class="illustration-text">Chart showing annual worth distribution over time.</p>
+                </div>
+              </div>
             </div>
-            <div class="input-row">
-              <label>Salvage Value (S)</label>
-              <input id="aw-calc-s" type="number" value="10000" step="100">
-            </div>
-            <div class="input-row">
-              <label>Interest Rate (i) %</label>
-              <input id="aw-calc-i" type="number" value="12" step="0.1">
-            </div>
-            <div class="input-row">
-              <label>Periods (n)</label>
-              <input id="aw-calc-n" type="number" value="8" step="1">
-            </div>
-            <button class="btn btn-primary" id="aw-calc-btn">Calculate AW</button>
-            <div class="calc-output" id="aw-calc-result"></div>
-            <div class="calc-steps" id="aw-calc-steps" style="display:none"></div>
           </div>
 
           <!-- IRR Calculator -->
           <div class="calc-panel" id="calc-irr">
-            <h3 style="margin-top: 0">IRR Estimator (5 Periods)</h3>
-            <div class="input-row">
-              <label>Period 0 (Initial Outlay)</label>
-              <input id="irr-calc-0" type="number" value="-100000" step="1000">
+            <div class="calc-layout">
+              <div class="calc-form">
+                <h3 style="margin-top: 0">IRR Estimator (5 Periods)</h3>
+                <div class="input-row">
+                  <label>Period 0 (Initial Outlay)</label>
+                  <input id="irr-calc-0" type="number" value="-100000" step="1000">
+                </div>
+                <div class="input-row">
+                  <label>Period 1 Cash Flow</label>
+                  <input id="irr-calc-1" type="number" value="30000" step="1000">
+                </div>
+                <div class="input-row">
+                  <label>Period 2 Cash Flow</label>
+                  <input id="irr-calc-2" type="number" value="40000" step="1000">
+                </div>
+                <div class="input-row">
+                  <label>Period 3 Cash Flow</label>
+                  <input id="irr-calc-3" type="number" value="50000" step="1000">
+                </div>
+                <div class="input-row">
+                  <label>Period 4 Cash Flow</label>
+                  <input id="irr-calc-4" type="number" value="30000" step="1000">
+                </div>
+                <button class="btn btn-primary" id="irr-calc-btn">Estimate IRR</button>
+                <div class="calc-output" id="irr-calc-result"></div>
+                <div class="calc-steps" id="irr-calc-steps" style="display:none"></div>
+              </div>
+              <div class="calc-illustration">
+                <div class="illustration-card chart-container">
+                  <canvas id="irrChart"></canvas>
+                  <p class="illustration-text">Chart showing cash flows and cumulative NPV.</p>
+                </div>
+              </div>
             </div>
-            <div class="input-row">
-              <label>Period 1 Cash Flow</label>
-              <input id="irr-calc-1" type="number" value="30000" step="1000">
-            </div>
-            <div class="input-row">
-              <label>Period 2 Cash Flow</label>
-              <input id="irr-calc-2" type="number" value="40000" step="1000">
-            </div>
-            <div class="input-row">
-              <label>Period 3 Cash Flow</label>
-              <input id="irr-calc-3" type="number" value="50000" step="1000">
-            </div>
-            <div class="input-row">
-              <label>Period 4 Cash Flow</label>
-              <input id="irr-calc-4" type="number" value="30000" step="1000">
-            </div>
-            <button class="btn btn-primary" id="irr-calc-btn">Estimate IRR</button>
-            <div class="calc-output" id="irr-calc-result"></div>
-            <div class="calc-steps" id="irr-calc-steps" style="display:none"></div>
           </div>
 
           <!-- EUAC Calculator -->
           <div class="calc-panel" id="calc-euac">
-            <h3 style="margin-top: 0">EUAC Calculator</h3>
-            <div class="input-row">
-              <label>Initial Cost (P)</label>
-              <input id="euac-calc-p" type="number" value="80000" step="1000">
+            <div class="calc-layout">
+              <div class="calc-form">
+                <h3 style="margin-top: 0">EUAC Calculator</h3>
+                <div class="input-row">
+                  <label>Initial Cost (P)</label>
+                  <input id="euac-calc-p" type="number" value="80000" step="1000">
+                </div>
+                <div class="input-row">
+                  <label>Annual Operating Cost (A)</label>
+                  <input id="euac-calc-a" type="number" value="15000" step="100">
+                </div>
+                <div class="input-row">
+                  <label>Salvage Value (S)</label>
+                  <input id="euac-calc-s" type="number" value="10000" step="1000">
+                </div>
+                <div class="input-row">
+                  <label>Interest Rate (i) %</label>
+                  <input id="euac-calc-i" type="number" value="10" step="0.1">
+                </div>
+                <div class="input-row">
+                  <label>Life (n)</label>
+                  <input id="euac-calc-n" type="number" value="6" step="1">
+                </div>
+                <button class="btn btn-primary" id="euac-calc-btn">Calculate EUAC</button>
+                <div class="calc-output" id="euac-calc-result"></div>
+                <div class="calc-steps" id="euac-calc-steps" style="display:none"></div>
+              </div>
+              <div class="calc-illustration">
+                <div class="illustration-card chart-container">
+                  <canvas id="euacChart"></canvas>
+                  <p class="illustration-text">Chart showing annual costs and equivalent uniform annual cost.</p>
+                </div>
+              </div>
             </div>
-            <div class="input-row">
-              <label>Annual Operating Cost (A)</label>
-              <input id="euac-calc-a" type="number" value="15000" step="100">
-            </div>
-            <div class="input-row">
-              <label>Salvage Value (S)</label>
-              <input id="euac-calc-s" type="number" value="10000" step="1000">
-            </div>
-            <div class="input-row">
-              <label>Interest Rate (i) %</label>
-              <input id="euac-calc-i" type="number" value="10" step="0.1">
-            </div>
-            <div class="input-row">
-              <label>Life (n)</label>
-              <input id="euac-calc-n" type="number" value="6" step="1">
-            </div>
-            <button class="btn btn-primary" id="euac-calc-btn">Calculate EUAC</button>
-            <div class="calc-output" id="euac-calc-result"></div>
-            <div class="calc-steps" id="euac-calc-steps" style="display:none"></div>
           </div>
 
           <!-- Interest Factors -->
           <div class="calc-panel" id="calc-factors">
-            <h3 style="margin-top: 0">Interest Factor Calculator</h3>
-            <div class="input-row">
-              <label>Interest Rate (i) %</label>
-              <input id="factors-calc-i" type="number" value="10" step="0.1">
+            <div class="calc-layout">
+              <div class="calc-form">
+                <h3 style="margin-top: 0">Interest Factor Calculator</h3>
+                <div class="input-row">
+                  <label>Interest Rate (i) %</label>
+                  <input id="factors-calc-i" type="number" value="10" step="0.1">
+                </div>
+                <div class="input-row">
+                  <label>Periods (n)</label>
+                  <input id="factors-calc-n" type="number" value="5" step="1">
+                </div>
+                <button class="btn btn-primary" id="factors-calc-btn">Calculate Factors</button>
+                <div class="calc-output" id="factors-calc-result"></div>
+              </div>
+              <div class="calc-illustration">
+                <div class="illustration-card chart-container">
+                  <canvas id="factorsChart"></canvas>
+                  <p class="illustration-text">Chart showing how interest factors change with time.</p>
+                </div>
+              </div>
             </div>
-            <div class="input-row">
-              <label>Periods (n)</label>
-              <input id="factors-calc-n" type="number" value="5" step="1">
-            </div>
-            <button class="btn btn-primary" id="factors-calc-btn">Calculate Factors</button>
-            <div class="calc-output" id="factors-calc-result"></div>
           </div>
         </div>
       </section>
@@ -460,10 +505,6 @@
       <section class="section" id="models" aria-labelledby="models-title">
         <div class="section-head">
           <h2 id="models-title">Quantitative models &amp; cash-flow laboratory</h2>
-          <p>
-            Pair tabular inputs with dynamic SVGs—the same “sketch first, then compute” workflow emphasized in professional engineering
-            economy practice.
-          </p>
         </div>
 
         <article class="viz-panel">
@@ -511,8 +552,8 @@
                     <td><input id="sc-p" type="number" min="1" step="100" value="1000" /></td>
                   </tr>
                   <tr>
-                    <th scope="row">Interest rate <em>i</em> (per year, decimal input as %)</th>
-                    <td><input id="sc-i" type="number" min="0" max="50" step="0.5" value="8" /> %</td>
+                    <th scope="row">Interest rate <em>i</em> (per year, %)</th>
+                    <td><input id="sc-i" type="number" min="0" max="50" step="0.5" value="8" /></td>
                   </tr>
                   <tr>
                     <th scope="row">Horizon <em>n</em> (years)</th>
@@ -532,10 +573,6 @@
       <section class="section" id="challenge" aria-labelledby="challenge-title">
         <div class="section-head">
           <h2 id="challenge-title">Challenge mode &amp; leaderboards</h2>
-          <p>
-            Twelve questions per difficulty tier. After each answer you get a verdict plus a worked solution. Scores and the sidebar
-            leaderboard are stored only in this browser (they are not sent to any server).
-          </p>
         </div>
         <div class="challenge-layout">
           <div id="challenge-root" class="challenge-main"></div>
@@ -548,62 +585,146 @@
 
       <section class="section" id="play" aria-labelledby="play-title">
         <div class="section-head">
-          <h2 id="play-title">Interact and play</h2>
-          <p>Sliders, quick scenarios, and flip cards for warm-up outside the graded challenge.</p>
+          <h2 id="play-title">🏥 Bankruptcy Doctor: Intuition Crusher</h2>
+          <p>Diagnose and save dying engineering projects using the right tools!</p>
         </div>
-        <div class="play-grid">
-          <div class="panel" aria-labelledby="calc-title">
-            <h3 id="calc-title">Future value explorer</h3>
-            <div id="fv-formula-katex" class="katex-block fv-formula"></div>
-            <p class="panel-lead">
-              Discrete compounding with nominal annual <em>r</em> and <em>m</em> settlements per year.
-            </p>
-            <div class="input-row">
-              <label><span>Principal <em>P</em></span><span id="lab-p">1000</span></label>
-              <input id="in-p-num" class="calc-input" type="number" min="100" max="10000" step="100" value="1000" aria-label="Principal P" />
+
+        <div class="bankruptcy-doctor-panel">
+          <!-- Progress Dashboard -->
+          <div class="progress-dashboard" id="progress-dashboard">
+            <div class="progress-stat">
+              <span class="progress-icon">✅</span>
+              <span class="progress-label">Completed</span>
+              <span class="progress-value" id="completed-count">1</span>/5
             </div>
-            <div class="input-row">
-              <label><span>Nominal annual <em>r</em></span><span id="lab-r">8%</span></label>
-              <input id="in-r-num" class="calc-input" type="number" min="0" max="20" step="0.5" value="8" aria-label="Nominal rate r percent" />
+            <div class="progress-stat">
+              <span class="progress-icon">🎯</span>
+              <span class="progress-label">Accuracy</span>
+              <span class="progress-value" id="accuracy-rate">100%</span>
             </div>
-            <div class="input-row">
-              <label><span>Years <em>t</em></span><span id="lab-t">5</span></label>
-              <input id="in-t-num" class="calc-input" type="number" min="1" max="20" step="1" value="5" aria-label="Years t" />
+            <div class="progress-stat">
+              <span class="progress-icon">📚</span>
+              <span class="progress-label">Mastery</span>
+              <span class="progress-value" id="mastery-level">20%</span>
             </div>
-            <div class="input-row">
-              <label><span>Compounding periods per year <em>m</em></span><span id="lab-m">12</span></label>
-              <input id="in-m-num" class="calc-input" type="number" min="1" max="365" step="1" value="12" aria-label="Compounding periods m" />
+          </div>
+          
+          <!-- Level Selector -->
+          <div class="level-selector" id="level-selector">
+            <div class="level-item level-completed" data-level="0">
+              <span class="level-number">1</span>
+              <span class="level-name">The IRR Trap</span>
             </div>
-            <div class="calc-output" aria-live="polite">
-              Ending balance <em>F</em> ≈ <strong id="out-f">—</strong><br />
-              Effective annual rate <em>i<sub>a</sub></em> ≈ <strong id="out-ia">—</strong>
+            <div class="level-item" data-level="1">
+              <span class="level-number">2</span>
+              <span class="level-name">NPW Curve Betrayal</span>
+            </div>
+            <div class="level-item" data-level="2">
+              <span class="level-number">3</span>
+              <span class="level-name">Lifespan Illusion</span>
+            </div>
+            <div class="level-item" data-level="3">
+              <span class="level-number">4</span>
+              <span class="level-name">The Sunk Cost Ghost</span>
+            </div>
+            <div class="level-item" data-level="4">
+              <span class="level-number">5</span>
+              <span class="level-name">MARR's Dark Side</span>
             </div>
           </div>
 
-          <div class="panel panel-loan" aria-labelledby="loan-title">
-            <h3 id="loan-title">Which financing offer is cheaper?</h3>
-            <p class="panel-lead panel-lead-lg">
-              Compare effective annual borrowing costs when nominal quotes and compounding frequency differ.
-            </p>
-            <div class="quiz-q" id="loan-scenario"></div>
-            <div class="quiz-options" id="loan-options"></div>
-            <div class="quiz-feedback" id="loan-feedback" aria-live="polite"></div>
-            <button type="button" class="btn" id="loan-next" style="margin-top: 12px">New scenario</button>
+          <!-- Tool Info Popup -->
+          <div class="tool-popup hidden" id="tool-popup">
+            <div class="tool-popup-content">
+              <button class="tool-popup-close" id="tool-popup-close">&times;</button>
+              <h3 class="tool-popup-title" id="tool-popup-title"></h3>
+              <div class="tool-popup-details" id="tool-popup-details"></div>
+            </div>
           </div>
 
-          <div class="panel" aria-labelledby="quiz-title">
-            <h3 id="quiz-title">NPW quick check</h3>
-            <p class="panel-lead panel-lead-lg">Mutually exclusive choice at a common MARR and horizon.</p>
-            <div class="quiz-q" id="mc-q"></div>
-            <div class="quiz-options" id="mc-opts"></div>
-            <div class="quiz-feedback" id="mc-fb" aria-live="polite"></div>
-            <button type="button" class="btn" id="mc-next" style="margin-top: 12px">Next question</button>
-          </div>
+          <!-- Game Area -->
+          <div class="game-area" id="game-area">
+            <!-- Stage 1: Case Introduction -->
+            <div class="game-stage case-intro" id="case-intro">
+              <div class="case-header">
+                <span class="case-tag">📂 Case File</span>
+                <span class="case-number">#001</span>
+              </div>
+              <h3 class="case-title" id="case-title">The IRR Trap</h3>
+              <p class="case-narrative" id="case-narrative">
+                The boss excitedly says: "Project A has IRR 28%, crushing B's 15%!"
+              </p>
+              <button class="btn btn-primary btn-lg" id="btn-intro-next">Start Diagnosis</button>
+            </div>
 
-          <div class="panel panel-flash" aria-labelledby="flash-title">
-            <h3 id="flash-title">Formula flip cards</h3>
-            <p class="panel-lead panel-lead-lg">Tap a card to flip. Front: concept; back: typeset formula.</p>
-            <div class="flash-grid" id="flash-grid"></div>
+            <!-- Stage 2: Intuition Vote -->
+            <div class="game-stage intuition-vote hidden" id="intuition-vote">
+              <h3>💭 Intuition Vote (15 seconds)</h3>
+              <p class="vote-question" id="vote-question">What should you do?</p>
+              <div class="vote-options" id="vote-options"></div>
+              <div class="timer-bar">
+                <div class="timer-fill" id="timer-fill"></div>
+              </div>
+            </div>
+
+            <!-- Stage 3: Tool Selection -->
+            <div class="game-stage tool-select hidden" id="tool-select">
+              <h3>🧰 Toolbox - Pick your diagnostic tool!</h3>
+              <p class="tool-hint">Choose the right engineering economics tool</p>
+              <div class="tool-options" id="tool-options"></div>
+              <button class="btn btn-primary" id="btn-tool-next">Proceed with this tool</button>
+            </div>
+
+            <!-- Stage 4: Calculation & Visualization -->
+            <div class="game-stage calculate hidden" id="calculate">
+              <h3>📊 Interactive Calculation</h3>
+              <div class="calc-wrapper">
+                <div class="marr-slider">
+                  <label for="marr-slider">MARR: <span id="marr-value">10</span>%</label>
+                  <input type="range" id="marr-slider" min="0" max="30" step="1" value="10" />
+                </div>
+                <div class="viz-wrapper">
+                  <canvas id="case-chart"></canvas>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-lg" id="btn-calc-next">Reveal the Truth</button>
+            </div>
+
+            <!-- Stage 5: Revelation (Intuition Crusher) -->
+            <div class="game-stage revelation hidden" id="revelation">
+              <div class="shatter-overlay" id="shatter-overlay"></div>
+              <h3 class="revelation-title">⚡ The Truth is Revealed!</h3>
+              <div class="revelation-content" id="revelation-content">
+                <p id="revelation-text"></p>
+              </div>
+              <div class="revelation-result">
+                <span class="user-choice" id="user-choice"></span>
+                <span class="vs">vs</span>
+                <span class="correct-choice" id="correct-choice"></span>
+              </div>
+              <div class="revelation-visual" id="revelation-visual"></div>
+              <button class="btn btn-primary btn-lg" id="btn-rev-next">Get Your Prescription</button>
+            </div>
+
+            <!-- Stage 6: Prescription -->
+            <div class="game-stage prescription hidden" id="prescription">
+              <h3>📋 Prescription for Success</h3>
+              <div class="prescription-card">
+                <div class="prescription-header">
+                  <span class="prescription-tag">Rx</span>
+                  <span class="prescription-title">One-Sentence Principle</span>
+                </div>
+                <p class="prescription-text" id="prescription-text"></p>
+              </div>
+              <div class="mistake-book">
+                <h4>📔 Your Mistake Book</h4>
+                <div class="mistake-list" id="mistake-list"></div>
+              </div>
+              <div class="prescription-buttons">
+                <button class="btn" id="btn-prev-next">Next Case</button>
+                <button class="btn btn-primary" id="btn-restart">Play Again</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -623,6 +744,7 @@
     <script defer src="js/challenge-data.js"></script>
     <script defer src="js/visual-lab.js"></script>
     <script defer src="js/challenge.js"></script>
+    <script defer src="js/playground.js"></script>
     <script defer src="js/app.js"></script>
   </body>
 </html>

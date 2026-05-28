@@ -101,7 +101,6 @@
     const colors = getColors();
     let h = `<title>Cash flow diagram</title>`;
     h += `<rect width="${W}" height="${H}" fill="${colors.bg}"/>`;
-    h += `<text x="${padL}" y="22" fill="${colors.text}" font-size="14">Signed cash flows (edit table) →</text>`;
     h += `<line x1="${x0}" y1="${baseY}" x2="${x1}" y2="${baseY}" stroke="${colors.line}" stroke-width="2"/>`;
     h += `<polygon points="${x1},${baseY} ${x1 - 8},${baseY - 4} ${x1 - 8},${baseY + 4}" fill="${colors.line}"/>`;
     h += `<text x="${x1 + 2}" y="${baseY + 4}" fill="${colors.muted}" font-size="12">time</text>`;

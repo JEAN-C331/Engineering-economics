@@ -323,6 +323,8 @@
     const boxQ = $("#loan-scenario");
     const boxO = $("#loan-options");
     const fb = $("#loan-feedback");
+    if (!boxQ || !boxO || !fb) return;
+    
     const s = scenarios[scenIdx % scenarios.length];
     const mathHtml = s.tex ? `<div class="quiz-math">${renderFormula(s.tex, true)}</div>` : "";
     boxQ.innerHTML = `${escapeHtml(s.text)}${mathHtml}`;
@@ -387,6 +389,8 @@
     const qEl = $("#mc-q");
     const oEl = $("#mc-opts");
     const fEl = $("#mc-fb");
+    if (!qEl || !oEl || !fEl) return;
+    
     const item = mcBank[mcIdx % mcBank.length];
     qEl.textContent = item.q;
     fEl.textContent = "";
@@ -617,6 +621,18 @@
   }
 
   /* ========== PRESENT WORTH CALCULATOR ========== */
+  function updatePWSVG(F, i, n, P) {
+    const fvDisplay = document.getElementById('pw-future-value');
+    const pvDisplay = document.getElementById('pw-present-value');
+    const rateDisplay = document.getElementById('pw-rate-display');
+    const periodDisplay = document.getElementById('pw-period-display');
+    
+    if (fvDisplay) fvDisplay.textContent = `$${F.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (pvDisplay) pvDisplay.textContent = `$${P.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (rateDisplay) rateDisplay.textContent = `i = ${(i*100).toFixed(1)}%`;
+    if (periodDisplay) periodDisplay.textContent = `n = ${n}`;
+  }
+
   function calculatePW() {
     const F = Number(document.getElementById('pw-calc-f').value);
     const i = Number(document.getElementById('pw-calc-i').value) / 100;
@@ -639,15 +655,41 @@
         <li>Compute PW: P = F × Factor = ${F} × ${factor.toFixed(6)} = $${P.toFixed(2)}</li>
       </ol>
     `;
+    
+    updatePWSVG(F, i, n, P);
+    if (typeof updatePWChart === 'function') {
+      updatePWChart(F, i, n, P);
+    }
   }
 
   const pwBtn = document.getElementById('pw-calc-btn');
   if (pwBtn) {
     pwBtn.addEventListener('click', calculatePW);
-    calculatePW();
   }
 
+  const pwInputs = ['pw-calc-f', 'pw-calc-i', 'pw-calc-n'];
+  pwInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calculatePW);
+    }
+  });
+
   /* ========== ANNUAL WORTH CALCULATOR ========== */
+  function updateAWSVG(P, S, i, n, CR) {
+    const pDisplay = document.getElementById('aw-p-display');
+    const sDisplay = document.getElementById('aw-s-display');
+    const annualDisplay = document.getElementById('aw-annual-value');
+    const rateDisplay = document.getElementById('aw-rate-display');
+    const periodDisplay = document.getElementById('aw-period-display');
+    
+    if (pDisplay) pDisplay.textContent = `$${P.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (sDisplay) sDisplay.textContent = `$${S.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (annualDisplay) annualDisplay.textContent = `$${CR.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (rateDisplay) rateDisplay.textContent = `i = ${(i*100).toFixed(1)}%`;
+    if (periodDisplay) periodDisplay.textContent = `n = ${n}`;
+  }
+
   function calculateAW() {
     const P = Number(document.getElementById('aw-calc-p').value);
     const S = Number(document.getElementById('aw-calc-s').value);
@@ -673,15 +715,47 @@
         <li>CR = ${P}×${apFactor.toFixed(6)} - ${S}×${afFactor.toFixed(6)} = $${CR.toFixed(2)}</li>
       </ol>
     `;
+    
+    updateAWSVG(P, S, i, n, CR);
+    
+    const capRecov = P * apFactor;
+    const salvRecov = S * afFactor;
+    
+    if (typeof updateAWChart === 'function') {
+      updateAWChart(capRecov, CR, salvRecov);
+    }
   }
 
   const awBtn = document.getElementById('aw-calc-btn');
   if (awBtn) {
     awBtn.addEventListener('click', calculateAW);
-    calculateAW();
   }
 
+  const awInputs = ['aw-calc-p', 'aw-calc-s', 'aw-calc-i', 'aw-calc-n'];
+  awInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calculateAW);
+    }
+  });
+
   /* ========== IRR CALCULATOR ========== */
+  function updateIRRSVG(cashFlows, irrPercent) {
+    const cf0Display = document.getElementById('irr-cf0-display');
+    const cf1Display = document.getElementById('irr-cf1-display');
+    const cf2Display = document.getElementById('irr-cf2-display');
+    const cf3Display = document.getElementById('irr-cf3-display');
+    const cf4Display = document.getElementById('irr-cf4-display');
+    const irrDisplay = document.getElementById('irr-result-display');
+    
+    if (cf0Display) cf0Display.textContent = `-$${Math.abs(cashFlows[0]).toLocaleString()}`;
+    if (cf1Display) cf1Display.textContent = `+$${cashFlows[1].toLocaleString()}`;
+    if (cf2Display) cf2Display.textContent = `+$${cashFlows[2].toLocaleString()}`;
+    if (cf3Display) cf3Display.textContent = `+$${cashFlows[3].toLocaleString()}`;
+    if (cf4Display) cf4Display.textContent = `+$${cashFlows[4].toLocaleString()}`;
+    if (irrDisplay) irrDisplay.textContent = `${irrPercent.toFixed(2)}%`;
+  }
+
   function calculateIRR() {
     const cashFlows = [
       Number(document.getElementById('irr-calc-0').value),
@@ -728,15 +802,43 @@
         </ol>
       `;
     }
+    
+    updateIRRSVG(cashFlows, irrPercent);
+    if (typeof updateIRRChart === 'function') {
+      updateIRRChart(cashFlows[0], cashFlows[1], cashFlows[2], cashFlows[3], cashFlows[4]);
+    }
   }
 
   const irrBtn = document.getElementById('irr-calc-btn');
   if (irrBtn) {
     irrBtn.addEventListener('click', calculateIRR);
-    calculateIRR();
   }
 
+  const irrInputs = ['irr-calc-0', 'irr-calc-1', 'irr-calc-2', 'irr-calc-3', 'irr-calc-4'];
+  irrInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calculateIRR);
+    }
+  });
+
   /* ========== EUAC CALCULATOR ========== */
+  function updateEUACSVG(P, A, S, i, n, EUAC) {
+    const pDisplay = document.getElementById('euac-p-display');
+    const aDisplay = document.getElementById('euac-a-display');
+    const sDisplay = document.getElementById('euac-s-display');
+    const resultDisplay = document.getElementById('euac-result-display');
+    const rateDisplay = document.getElementById('euac-rate-display');
+    const periodDisplay = document.getElementById('euac-period-display');
+    
+    if (pDisplay) pDisplay.textContent = `$${P.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (aDisplay) aDisplay.textContent = `$${A.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (sDisplay) sDisplay.textContent = `$${S.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (resultDisplay) resultDisplay.textContent = `$${EUAC.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    if (rateDisplay) rateDisplay.textContent = `i = ${(i*100).toFixed(1)}%`;
+    if (periodDisplay) periodDisplay.textContent = `n = ${n}`;
+  }
+
   function calculateEUAC() {
     const P = Number(document.getElementById('euac-calc-p').value);
     const A = Number(document.getElementById('euac-calc-a').value);
@@ -768,15 +870,43 @@
         </ol>
       `;
     }
+    
+    updateEUACSVG(P, A, S, i, n, EUAC);
+    if (typeof updateEUACChart === 'function') {
+      updateEUACChart(P, A, S, i, n, EUAC);
+    }
   }
 
   const euacBtn = document.getElementById('euac-calc-btn');
   if (euacBtn) {
     euacBtn.addEventListener('click', calculateEUAC);
-    calculateEUAC();
   }
 
+  const euacInputs = ['euac-calc-p', 'euac-calc-a', 'euac-calc-s', 'euac-calc-i', 'euac-calc-n'];
+  euacInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calculateEUAC);
+    }
+  });
+
   /* ========== INTEREST FACTORS CALCULATOR ========== */
+  function updateFactorsSVG(i, n, pf, fp, pa, ap) {
+    const pfDisplay = document.getElementById('pf-display');
+    const fpDisplay = document.getElementById('fp-display');
+    const paDisplay = document.getElementById('pa-display');
+    const apDisplay = document.getElementById('ap-display');
+    const rateDisplay = document.getElementById('factors-rate-display');
+    const periodDisplay = document.getElementById('factors-period-display');
+    
+    if (pfDisplay) pfDisplay.textContent = pf.toFixed(4);
+    if (fpDisplay) fpDisplay.textContent = fp.toFixed(4);
+    if (paDisplay) paDisplay.textContent = pa.toFixed(4);
+    if (apDisplay) apDisplay.textContent = ap.toFixed(4);
+    if (rateDisplay) rateDisplay.textContent = `i = ${(i*100).toFixed(1)}%`;
+    if (periodDisplay) periodDisplay.textContent = `n = ${n}`;
+  }
+
   function calculateFactors() {
     const i = Number(document.getElementById('factors-calc-i').value) / 100;
     const n = Number(document.getElementById('factors-calc-n').value);
@@ -805,13 +935,354 @@
         </table>
       `;
     }
+    
+    updateFactorsSVG(i, n, pf, fp, pa, ap);
+    if (typeof updateFactorsChart === 'function') {
+      updateFactorsChart(i, n);
+    }
   }
 
   const factorsBtn = document.getElementById('factors-calc-btn');
   if (factorsBtn) {
     factorsBtn.addEventListener('click', calculateFactors);
-    calculateFactors();
   }
+
+  const factorsInputs = ['factors-calc-i', 'factors-calc-n'];
+  factorsInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calculateFactors);
+    }
+  });
+
+  /* ========== CHARTS INITIALIZATION ========== */
+  let pwChart, awChart, irrChart, euacChart, factorsChart;
+
+  // Initialize PW Chart
+  function initPWChart() {
+    const ctx = document.getElementById('pwChart');
+    if (!ctx) return;
+    
+    pwChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['0'],
+        datasets: [{
+          label: 'Present Value',
+          data: [0],
+          borderColor: '#0ea5e9',
+          backgroundColor: 'rgba(14, 165, 233, 0.1)',
+          fill: true,
+          tension: 0.3
+        }, {
+          label: 'Future Value',
+          data: [0],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'PW over Time'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  // Update PW Chart
+  function updatePWChart(F, i, n, P) {
+    if (!pwChart) return;
+    
+    const labels = [];
+    const pvData = [];
+    const fvData = [];
+    
+    for (let t = 0; t <= n; t++) {
+      labels.push(`Year ${t}`);
+      fvData.push(F);
+      const pvAtT = F / Math.pow(1 + i, n - t);
+      pvData.push(pvAtT);
+    }
+    
+    pwChart.data.labels = labels;
+    pwChart.data.datasets[0].data = pvData;
+    pwChart.data.datasets[1].data = fvData;
+    pwChart.update();
+  }
+
+  // Initialize AW Chart
+  function initAWChart() {
+    const ctx = document.getElementById('awChart');
+    if (!ctx) return;
+    
+    awChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Capital Recovery', 'Annual Worth', 'Salvage Recovery'],
+        datasets: [{
+          label: 'Amount',
+          data: [0, 0, 0],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.1)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: false,
+          pointRadius: 6,
+          pointHoverRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Annual Worth Breakdown'
+          }
+        }
+      }
+    });
+  }
+
+  // Update AW Chart
+  function updateAWChart(capRecov, annualWorth, salvRecov) {
+    if (!awChart) return;
+    awChart.data.datasets[0].data = [capRecov, annualWorth, salvRecov];
+    awChart.update();
+  }
+
+  // Initialize IRR Chart
+  function initIRRChart() {
+    const ctx = document.getElementById('irrChart');
+    if (!ctx) return;
+    
+    irrChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Period 0', 'Period 1', 'Period 2', 'Period 3', 'Period 4'],
+        datasets: [{
+          label: 'Cash Flow',
+          data: [-100000, 30000, 40000, 50000, 30000],
+          backgroundColor: function(context) {
+            return context.parsed.y >= 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(244, 63, 94, 0.8)';
+          },
+          borderColor: function(context) {
+            return context.parsed.y >= 0 ? '#10b981' : '#f43f5e';
+          },
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Project Cash Flows'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: 'rgba(0,0,0,0.05)'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Update IRR Chart
+  function updateIRRChart(cf0, cf1, cf2, cf3, cf4) {
+    if (!irrChart) return;
+    irrChart.data.datasets[0].data = [cf0, cf1, cf2, cf3, cf4];
+    irrChart.update();
+  }
+
+  // Initialize EUAC Chart
+  function initEUACChart() {
+    const ctx = document.getElementById('euacChart');
+    if (!ctx) return;
+    
+    euacChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Year 0'],
+        datasets: [{
+          label: 'Annual Costs',
+          data: [0],
+          borderColor: '#f43f5e',
+          backgroundColor: 'rgba(244, 63, 94, 0.1)',
+          fill: true,
+          tension: 0.3
+        }, {
+          label: 'EUAC',
+          data: [0],
+          borderColor: '#fb7185',
+          borderDash: [5, 5],
+          backgroundColor: 'rgba(251, 113, 133, 0.1)',
+          fill: false,
+          tension: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'EUAC Analysis'
+          }
+        }
+      }
+    });
+  }
+
+  // Update EUAC Chart
+  function updateEUACChart(p, a, s, i, n, euac) {
+    if (!euacChart) return;
+    
+    const labels = [];
+    const annualCostsData = [];
+    const euacData = [];
+    
+    for (let t = 0; t <= n; t++) {
+      labels.push(`Year ${t}`);
+      if (t === 0) {
+        annualCostsData.push(p);
+      } else if (t === n) {
+        annualCostsData.push(a - s);
+      } else {
+        annualCostsData.push(a);
+      }
+      euacData.push(euac);
+    }
+    
+    euacChart.data.labels = labels;
+    euacChart.data.datasets[0].data = annualCostsData;
+    euacChart.data.datasets[1].data = euacData;
+    euacChart.update();
+  }
+
+  // Initialize Factors Chart
+  function initFactorsChart() {
+    const ctx = document.getElementById('factorsChart');
+    if (!ctx) return;
+    
+    factorsChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['0'],
+        datasets: [
+          {
+            label: '(P/F, i, n)',
+            data: [1],
+            borderColor: '#0ea5e9',
+            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+            tension: 0.3
+          },
+          {
+            label: '(F/P, i, n)',
+            data: [1],
+            borderColor: '#38bdf8',
+            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+            tension: 0.3
+          },
+          {
+            label: '(P/A, i, n)',
+            data: [0],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.3
+          },
+          {
+            label: '(A/P, i, n)',
+            data: [0],
+            borderColor: '#f43f5e',
+            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Interest Factors'
+          }
+        }
+      }
+    });
+  }
+
+  // Update Factors Chart
+  function updateFactorsChart(i, n) {
+    if (!factorsChart) return;
+    
+    const labels = [];
+    const pfData = [];
+    const fpData = [];
+    const paData = [];
+    const apData = [];
+    
+    for (let t = 0; t <= n; t++) {
+      labels.push(`n=${t}`);
+      const pf = t === 0 ? 1 : 1 / Math.pow(1 + i, t);
+      const fp = t === 0 ? 1 : Math.pow(1 + i, t);
+      const pa = t === 0 ? 0 : (1 - 1 / Math.pow(1 + i, t)) / i;
+      const ap = t === 0 ? 0 : i * Math.pow(1 + i, t) / (Math.pow(1 + i, t) - 1);
+      
+      pfData.push(pf);
+      fpData.push(fp);
+      paData.push(pa);
+      apData.push(ap);
+    }
+    
+    factorsChart.data.labels = labels;
+    factorsChart.data.datasets[0].data = pfData;
+    factorsChart.data.datasets[1].data = fpData;
+    factorsChart.data.datasets[2].data = paData;
+    factorsChart.data.datasets[3].data = apData;
+    factorsChart.update();
+  }
+
+  // Initialize all charts
+  initPWChart();
+  initAWChart();
+  initIRRChart();
+  initEUACChart();
+  initFactorsChart();
+
+  // Initial calculations to populate charts
+  calculatePW();
+  calculateAW();
+  calculateIRR();
+  calculateEUAC();
+  calculateFactors();
 
   /* ========== EXAMPLE FORMULAS ========== */
   function renderExampleFormulas() {
