@@ -10,6 +10,35 @@
     return Math.max(a, Math.min(b, n));
   }
 
+  function isLightMode() {
+    return !document.body.classList.contains('theme-dark');
+  }
+
+  function getColors() {
+    if (isLightMode()) {
+      return {
+        bg: '#ffffff',
+        text: '#1e293b',
+        muted: '#64748b',
+        line: '#cbd5e1',
+        positive: '#059669',
+        negative: '#dc2626',
+        simple: '#64748b',
+        compound: '#2563eb'
+      };
+    }
+    return {
+      bg: '#1e293b',
+      text: '#ffffff',
+      muted: '#e2e8f0',
+      line: '#64748b',
+      positive: '#22d3ee',
+      negative: '#f87171',
+      simple: '#cbd5e1',
+      compound: '#38bdf8'
+    };
+  }
+
   /* ---------- Cash flow diagram ---------- */
   const defaultFlows = [-1000, 0, 500, 500, 2000];
 
@@ -69,22 +98,23 @@
     flows.forEach((v) => (maxAbs = Math.max(maxAbs, Math.abs(v) || 0)));
     const scale = (v) => clamp(18 + (Math.log10(1 + (Math.abs(v) / maxAbs) * 9) / Math.log10(10)) * 55, 16, 85);
 
+    const colors = getColors();
     let h = `<title>Cash flow diagram</title>`;
-    h += `<rect width="${W}" height="${H}" fill="#121820"/>`;
-    h += `<text x="${padL}" y="22" fill="#c5d0dc" font-size="14">Signed cash flows (edit table) →</text>`;
-    h += `<line x1="${x0}" y1="${baseY}" x2="${x1}" y2="${baseY}" stroke="#3a4a5e" stroke-width="2"/>`;
-    h += `<polygon points="${x1},${baseY} ${x1 - 8},${baseY - 4} ${x1 - 8},${baseY + 4}" fill="#3a4a5e"/>`;
-    h += `<text x="${x1 + 2}" y="${baseY + 4}" fill="#9aa8b8" font-size="12">time</text>`;
+    h += `<rect width="${W}" height="${H}" fill="${colors.bg}"/>`;
+    h += `<text x="${padL}" y="22" fill="${colors.text}" font-size="14">Signed cash flows (edit table) →</text>`;
+    h += `<line x1="${x0}" y1="${baseY}" x2="${x1}" y2="${baseY}" stroke="${colors.line}" stroke-width="2"/>`;
+    h += `<polygon points="${x1},${baseY} ${x1 - 8},${baseY - 4} ${x1 - 8},${baseY + 4}" fill="${colors.line}"/>`;
+    h += `<text x="${x1 + 2}" y="${baseY + 4}" fill="${colors.muted}" font-size="12">time</text>`;
 
     for (let t = 0; t <= n; t++) {
       const x = gx(t);
-      h += `<text x="${x}" y="${baseY + 22}" text-anchor="middle" fill="#9aa8b8" font-size="12">${t}</text>`;
+      h += `<text x="${x}" y="${baseY + 22}" text-anchor="middle" fill="${colors.muted}" font-size="12">${t}</text>`;
       const v = flows[t];
       if (!v) continue;
       const len = scale(v);
       const up = v > 0;
       const y1 = up ? baseY - len : baseY + len;
-      const col = up ? "#3dd6c3" : "#e76f51";
+      const col = up ? colors.positive : colors.negative;
       h += `<line x1="${x}" y1="${baseY}" x2="${x}" y2="${y1}" stroke="${col}" stroke-width="3"/>`;
       const ty = up ? y1 - 6 : y1 + 14;
       h += `<text x="${x}" y="${ty}" text-anchor="middle" fill="${col}" font-size="12">${v}</text>`;
@@ -165,15 +195,16 @@
       dC += (k === 0 ? "M" : "L") + ` ${x.toFixed(1)} ${yc.toFixed(1)} `;
     }
 
-    let h = `<rect width="${W}" height="${H}" fill="#121820"/>`;
-    h += `<text x="${padL}" y="18" fill="#c5d0dc" font-size="14">Terminal wealth by year k (discrete points)</text>`;
-    h += `<line x1="${x0}" y1="${y0}" x2="${xMax}" y2="${y0}" stroke="#3a4a5e" stroke-width="2"/>`;
-    h += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${padT}" stroke="#3a4a5e" stroke-width="2"/>`;
-    h += `<path d="${dS.trim()}" fill="none" stroke="#9aa8b8" stroke-width="2.5" stroke-dasharray="7 5"/>`;
-    h += `<path d="${dC.trim()}" fill="none" stroke="#3dd6c3" stroke-width="2.5"/>`;
-    h += `<text x="${xMax - 200}" y="${padT + 14}" fill="#9aa8b8" font-size="12">Simple: Fk = P(1 + i·k)</text>`;
-    h += `<text x="${xMax - 200}" y="${padT + 30}" fill="#3dd6c3" font-size="12">Compound: Fk = P(1+i)^k</text>`;
-    h += `<text x="${x0}" y="${H - 10}" fill="#9aa8b8" font-size="11">k = 0…${n}</text>`;
+    const colors = getColors();
+    let h = `<rect width="${W}" height="${H}" fill="${colors.bg}"/>`;
+    h += `<text x="${padL}" y="18" fill="${colors.text}" font-size="14">Terminal wealth by year k (discrete points)</text>`;
+    h += `<line x1="${x0}" y1="${y0}" x2="${xMax}" y2="${y0}" stroke="${colors.line}" stroke-width="2"/>`;
+    h += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${padT}" stroke="${colors.line}" stroke-width="2"/>`;
+    h += `<path d="${dS.trim()}" fill="none" stroke="${colors.simple}" stroke-width="2.5" stroke-dasharray="7 5"/>`;
+    h += `<path d="${dC.trim()}" fill="none" stroke="${colors.compound}" stroke-width="2.5"/>`;
+    h += `<text x="${xMax - 200}" y="${padT + 14}" fill="${colors.simple}" font-size="12">Simple: Fk = P(1 + i·k)</text>`;
+    h += `<text x="${xMax - 200}" y="${padT + 30}" fill="${colors.compound}" font-size="12">Compound: Fk = P(1+i)^k</text>`;
+    h += `<text x="${x0}" y="${H - 10}" fill="${colors.muted}" font-size="11">k = 0…${n}</text>`;
     svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     svg.innerHTML = h;
   }
@@ -183,4 +214,22 @@
     if (el) el.addEventListener("input", drawSc);
   });
   drawSc();
+
+  // Redraw charts when theme changes
+  function initThemeObserver() {
+    const body = document.body;
+    if (body) {
+      const themeObserver = new MutationObserver(() => {
+        drawCfd();
+        drawSc();
+      });
+      themeObserver.observe(body, { attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeObserver);
+  } else {
+    initThemeObserver();
+  }
 })();

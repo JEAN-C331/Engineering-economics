@@ -1,18 +1,40 @@
 /* ECON-ENG Hub — Engineering Economics learner site */
 :root {
-  --bg: #0F172A;
-  --bg-elev: #1E293B;
-  --surface: #334155;
-  --border: #475569;
-  --text: #E2E8F0;
-  --muted: #94A3B8;
-  --accent: #38BDF8;
-  --accent-dim: #0EA5E9;
-  --warm: #06B6D4;
-  --danger: #F87171;
-  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Light theme - Blue primary */
+  --bg: #f8fafc;
+  --bg-elev: #ffffff;
+  --surface: #f1f5f9;
+  --border: #dbeafe;
+  --text: #1e293b;
+  --muted: #475569;
+  --accent: #2563eb;
+  --accent-dim: #1d4ed8;
+  --warm: #3b82f6;
+  --success: #059669;
+  --danger: #dc2626;
+  --formula-bg: #eff6ff;
+  --formula-border: #bfdbfe;
+  --font-sans: "Inter", "Roboto", "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Inter", "Roboto", "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius: 12px;
+  --shadow: 0 4px 20px rgba(37, 99, 235, 0.1);
+}
+
+/* Dark theme */
+body.theme-dark {
+  --bg: #0b1120;
+  --bg-elev: #1e293b;
+  --surface: #1e3a5f;
+  --border: #334155;
+  --text: #e0e7ff;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-dim: #0ea5e9;
+  --warm: #60a5fa;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --formula-bg: #1e293b;
+  --formula-border: #334155;
   --shadow: 0 8px 24px rgba(56, 189, 248, 0.15);
 }
 
@@ -29,11 +51,12 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: radial-gradient(1100px 720px at 12% -8%, rgba(56, 189, 248, 0.08) 0%, transparent 52%),
-    radial-gradient(880px 560px at 96% 4%, rgba(6, 182, 212, 0.06) 0%, transparent 48%), var(--bg);
+  background: var(--bg);
   color: var(--text);
-  line-height: 1.55;
+  line-height: 1.6;
+  font-size: 1rem;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -68,8 +91,275 @@ a:hover {
   top: 0;
   z-index: 50;
   backdrop-filter: blur(12px);
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(247, 250, 252, 0.95);
   border-bottom: 1px solid var(--border);
+}
+
+body.theme-dark .site-header {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent-dim);
+  background: var(--bg-elev);
+}
+
+/* Formula box styling */
+.formula-box {
+  font-size: 0.98rem;
+  background: var(--formula-bg);
+  border: 2px solid var(--formula-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  overflow-x: auto;
+}
+
+body.theme-dark .formula-box {
+  background: var(--formula-bg);
+  border-color: var(--formula-border);
+}
+
+/* Light mode specific card optimizations */
+body:not(.theme-dark) .hero-card,
+body:not(.theme-dark) .topic-card,
+body:not(.theme-dark) .panel,
+body:not(.theme-dark) .challenge-card,
+body:not(.theme-dark) .viz-panel {
+  background: #ffffff;
+  border-color: #d1d5db;
+}
+
+body:not(.theme-dark) .topic-body {
+  color: #334155;
+}
+
+/* Ensure formulas are dark enough in light mode */
+body:not(.theme-dark) .formula-box {
+  color: #1e293b;
+}
+
+body:not(.theme-dark) .formula-box .katex {
+  color: #1e293b;
+}
+
+/* Make muted text darker in light mode */
+body:not(.theme-dark) .hero-subtitle,
+body:not(.theme-dark) .panel-lead,
+body:not(.theme-dark) .topic-meta,
+body:not(.theme-dark) .muted,
+body:not(.theme-dark) .lb-label {
+  color: #475569;
+}
+
+/* Formula sheet styling */
+.formula-sheet {
+  background: var(--formula-bg);
+  border: 2px solid var(--formula-border);
+  color: var(--text);
+  box-shadow: none;
+}
+
+/* Striped table styling */
+.glossary-table tbody tr:nth-child(odd) {
+  background: var(--surface);
+}
+
+.glossary-table tbody tr:hover {
+  background: var(--bg-elev);
+}
+
+/* Card enhancements */
+.course-card, .topic-card, .panel, .challenge-card, .hero-card, .viz-panel {
+  box-shadow: var(--shadow);
+}
+
+/* Global search styling */
+.global-search {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.global-search input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.global-search svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+/* Formula quick reference section */
+.quick-formulas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.quick-formula-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-formula-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.quick-formula-card .katex {
+  font-size: 1.1em;
+}
+
+.quick-formula-card small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Learning path selector */
+.path-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.path-btn {
+  flex: 1;
+  min-width: 160px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.path-btn:hover,
+.path-btn.is-on {
+  border-color: var(--accent);
+  background: var(--formula-bg);
+}
+
+.path-btn small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Comprehensive calculator styling */
+.calc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.calc-tab {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.calc-tab:hover,
+.calc-tab.is-on {
+  color: var(--text);
+  border-color: var(--accent);
+  background: var(--formula-bg);
+}
+
+.calc-panel {
+  display: none;
+}
+
+.calc-panel.is-visible {
+  display: block;
+}
+
+/* Dark mode calc panel */
+body.theme-dark .calc-panel {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.theme-dark .calc-result {
+  background: #0f172a !important;
+  color: #22d3ee !important;
+  border-color: #334155 !important;
+}
+
+.calc-steps {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  border-left: 3px solid var(--warm);
+  font-size: 0.9rem;
+}
+
+/* Dark mode calc steps */
+body.theme-dark .calc-steps {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #38bdf8 !important;
+}
+
+.calc-steps ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.calc-steps li {
+  margin: 6px 0;
 }
 
 .header-inner {
@@ -238,6 +528,22 @@ main {
   background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
+
+/* Light mode hero spotlight */
+body:not(.theme-dark) .hero-viewport {
+  background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  box-shadow: none;
+  border-color: #bfdbfe;
+}
+
+/* Light mode hero slide text */
+body:not(.theme-dark) .hero-slide h4 {
+  color: #1e40af;
+}
+
+body:not(.theme-dark) .hero-slide p {
+  color: #475569;
+}
 .hero-slide h4 {
   margin: 0 0 8px;
   font-size: 0.98rem;
@@ -255,6 +561,12 @@ main {
   overflow-x: auto;
   border-radius: 10px;
   padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Light mode hero slide math box */
+body:not(.theme-dark) .hero-slide-math {
+  background: #e0e7ff;
 }
 .hero-dots {
   display: flex;
@@ -507,7 +819,7 @@ main {
 }
 .topic-body p {
   margin: 12px 0;
-  color: #c5d0dc;
+  color: var(--text);
   font-size: 0.92rem;
 }
 .formula-box {
@@ -525,6 +837,17 @@ main {
   color: var(--text);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
+}
+
+/* Light mode formula sheet */
+body:not(.theme-dark) .formula-sheet {
+  background: linear-gradient(180deg, #e0e7ff 0%, #c7d2fe 100%);
+  box-shadow: none;
+  border-color: #a5b4fc;
+}
+
+body:not(.theme-dark) .formula-sheet .katex {
+  color: #1e293b;
 }
 .formula-sheet .katex {
   color: var(--text);
@@ -650,7 +973,7 @@ main {
 .panel-lead {
   margin: 0 0 14px;
   font-size: 0.95rem;
-  color: #c8d2de;
+  color: var(--muted);
   line-height: 1.5;
 }
 .panel-lead-lg {
@@ -682,11 +1005,71 @@ main {
   border-bottom: none;
 }
 
+.glossary-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.glossary-category {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.glossary-category-title {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.glossary-search {
+  margin: 14px 0;
+}
+
+.glossary-search input {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.glossary-search input:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.35);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.glossary-category.hidden {
+  display: none;
+}
+
+.glossary-table tbody tr.hidden {
+  display: none;
+}
+
+.glossary-table tbody tr.highlighted {
+  background: rgba(56, 189, 248, 0.15);
+}
+
+body:not(.theme-dark) .glossary-table tbody tr.highlighted {
+  background: rgba(37, 99, 235, 0.12);
+}
+
 .steps-list {
   margin: 0 0 18px;
   padding-left: 1.25rem;
   max-width: 58rem;
-  color: #d0dae6;
+  color: var(--text);
   line-height: 1.55;
 }
 .steps-list li {
@@ -716,7 +1099,7 @@ main {
 .pitfall-card p {
   margin: 0;
   font-size: 0.86rem;
-  color: #c8d4e0;
+  color: var(--text);
   line-height: 1.5;
 }
 
@@ -835,6 +1218,20 @@ main {
   overflow: hidden;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
+
+/* Light mode flashcards */
+body:not(.theme-dark) .flash-front,
+body:not(.theme-dark) .flash-back {
+  background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #bfdbfe;
+  box-shadow: none;
+}
+
+body:not(.theme-dark) .flash-front,
+body:not(.theme-dark) .flash-back,
+body:not(.theme-dark) .flash-back .katex {
+  color: #1e293b;
+}
 .flash-back .katex {
   color: var(--text);
   font-size: 0.85em;
@@ -938,10 +1335,35 @@ main {
   border-radius: var(--radius);
   padding: 20px;
 }
+
+body.theme-dark .viz-panel {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.theme-dark .viz-panel .viz-title {
+  color: #f1f5f9 !important;
+}
+
+body.theme-dark .viz-panel .viz-lead,
+body.theme-dark .viz-panel .viz-note {
+  color: #cbd5e1 !important;
+}
+
+body.theme-dark .viz-svg-wrap {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.theme-dark .viz-svg-wrap svg {
+  background: #1e293b !important;
+}
+
 .viz-title {
   margin: 0 0 8px;
   font-size: 1.08rem;
 }
+
 .viz-lead {
   margin: 0 0 14px;
   color: var(--muted);
@@ -985,6 +1407,41 @@ main {
   color: var(--text);
   font-family: inherit;
 }
+
+/* Dark mode calculator inputs */
+body.theme-dark .field-row input[type="number"],
+body.theme-dark .calc-panel input[type="number"] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .field-row input[type="number"]::placeholder,
+body.theme-dark .calc-panel input[type="number"]::placeholder {
+  color: #64748b !important;
+}
+
+/* Dark mode data table */
+body.theme-dark .data-table th,
+body.theme-dark .data-table td {
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.theme-dark .data-table th {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+body.theme-dark .data-table tbody tr:nth-child(odd),
+body.theme-dark .data-table tbody tr:nth-child(even) {
+  background: #1e293b !important;
+}
+
+body.theme-dark .data-table {
+  color: #f1f5f9 !important;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -1018,10 +1475,37 @@ main {
   padding: 10px;
   min-height: 200px;
 }
+
+/* Light mode viz panel */
+body:not(.theme-dark) .viz-svg-wrap {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+/* Dark mode viz panel */
+body.theme-dark .viz-svg-wrap {
+  background: #1e293b;
+  border-color: #334155;
+}
 .viz-svg-wrap svg {
   display: block;
   width: 100%;
   height: auto;
+}
+
+body.theme-dark .viz-svg-wrap svg {
+  background: #1e293b;
+}
+
+/* Dark mode CFD table */
+body.theme-dark .cfd-cf {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.theme-dark .cfd-cf::placeholder {
+  color: #64748b !important;
 }
 
 /* Challenge + leaderboard */

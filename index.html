@@ -29,14 +29,27 @@
           <div class="brand-mark" aria-hidden="true">EE</div>
           <div>
             <h1>ECON-ENG Hub</h1>
-            <span>Engineering economics</span>
+            <span>Engineering Economics Learning Platform</span>
           </div>
         </div>
+        <div class="global-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm0-2a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11Z"
+              fill="currentColor"
+            />
+            <path d="M15.446 15.446 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <input id="global-search-input" type="search" placeholder="Search for topics, formulas, or challenges..." aria-label="Global search">
+        </div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+          🌙
+        </button>
         <nav aria-label="Primary">
           <ul>
             <li><a href="#hub">Knowledge Hub</a></li>
+            <li><a href="#calculators">Calculators</a></li>
             <li><a href="#glossary">Symbols</a></li>
-            <li><a href="#how-to-solve">How to solve</a></li>
             <li><a href="#models">Models lab</a></li>
             <li><a href="#challenge">Challenge</a></li>
             <li><a href="#play">Interact</a></li>
@@ -48,10 +61,12 @@
     <main id="main">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <h2 id="hero-title">Engineering economics: notes, models, and quizzes.</h2>
+          <h2 id="hero-title">Interactive Engineering Economics Learning Platform</h2>
+          <p class="hero-subtitle">PW · AW · IRR · Cash Flow · Risk Analysis — Learn, Practice, Analyze, Apply</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#hub">Open Knowledge Hub</a>
-            <a class="btn" href="#challenge">Start challenge mode</a>
+            <a class="btn" href="#challenge">Start Challenge Mode</a>
+            <a class="btn btn-outline" href="#calculators">Open Calculators</a>
           </div>
         </div>
         <aside
@@ -115,160 +130,329 @@
         <div class="section-head">
           <h2 id="glossary-title">Symbol &amp; convention glossary</h2>
           <p>Same letters are reused across factors—always tie each symbol to a period length and payment timing before substituting numbers.</p>
+          <div class="glossary-search">
+            <input type="search" id="glossary-search" placeholder="Search symbols and definitions..." aria-label="Search glossary">
+          </div>
         </div>
         <div class="glossary-wrap">
-          <table class="glossary-table">
-            <thead>
-              <tr>
-                <th scope="col">Symbol</th>
-                <th scope="col">Meaning</th>
-                <th scope="col">Typical units</th>
-                <th scope="col">Conventions on this site</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><em>P</em></td>
-                <td>Present worth (lump sum at <em>t</em> = 0 or at the valuation instant).</td>
-                <td>Currency (e.g., USD).</td>
-                <td>Single payment unless paired with an annuity factor.</td>
-              </tr>
-              <tr>
-                <td><em>F</em></td>
-                <td>Future worth—a one-time cash flow at the end of period <em>n</em>.</td>
-                <td>Currency.</td>
-                <td>Uses the same period index as <em>n</em> for <em>i</em>.</td>
-              </tr>
-              <tr>
-                <td><em>A</em></td>
-                <td>Uniform amount per period (“annuity” payment).</td>
-                <td>Currency per period.</td>
-                <td><strong>Ordinary annuity:</strong> payments at each <strong>end</strong> of period (default). <strong>Annuity due:</strong> payments at period <strong>beginning</strong>—shift one period or use textbook adjustment.</td>
-              </tr>
-              <tr>
-                <td><em>i</em></td>
-                <td>Interest (or discount) rate <strong>per interest period</strong> (not always per calendar year).</td>
-                <td>Dimensionless per period (enter 0.08 for 8%).</td>
-                <td>Discrete compounding unless a problem states continuous <em>r</em>.</td>
-              </tr>
-              <tr>
-                <td><em>n</em></td>
-                <td>Number of compounding (or payment) periods in the model.</td>
-                <td>Integer periods.</td>
-                <td>Must match the timing of <em>i</em> and of each cash flow arrow.</td>
-              </tr>
-              <tr>
-                <td><em>G</em></td>
-                <td>Arithmetic gradient step—cash flows increase by <em>G</em> each period after a base.</td>
-                <td>Currency per period.</td>
-                <td>Requires the textbook's "0, <em>G</em>, 2<em>G</em>, …" pattern relative to tabulated (P/G) or (A/G) forms.</td>
-              </tr>
-              <tr>
-                <td><em>r</em>, <em>m</em></td>
-                <td>Nominal rate per year (<em>r</em>) and compounding periods per year (<em>m</em>).</td>
-                <td><em>r</em> as decimal/year; <em>m</em> as count.</td>
-                <td>Periodic rate <em>i<sub>period</sub></em> = <em>r</em>/<em>m</em> when periods align with compounding months/quarters.</td>
-              </tr>
-              <tr>
-                <td><em>S</em></td>
-                <td>Salvage value—estimated resale value at end of asset life.</td>
-                <td>Currency.</td>
-                <td>Treated as inflow at period <em>n</em> unless specified otherwise.</td>
-              </tr>
-              <tr>
-                <td><em>t</em></td>
-                <td>Time index—period number in cash flow timeline.</td>
-                <td>Integer period index (0, 1, 2, ..., <em>n</em>).</td>
-                <td><em>t</em> = 0 is the present; <em>t</em> = <em>n</em> is the final period.</td>
-              </tr>
-              <tr>
-                <td><em>NCF</em></td>
-                <td>Net cash flow—receipts minus disbursements in a period.</td>
-                <td>Currency per period.</td>
-                <td>Positive = inflow (receipt); Negative = outflow (disbursement).</td>
-              </tr>
-              <tr>
-                <td><em>NPW</em> / <em>NPV</em></td>
-                <td>Net Present Worth / Net Present Value.</td>
-                <td>Currency.</td>
-                <td>Sum of discounted cash flows at MARR. Accept if NPW ≥ 0.</td>
-              </tr>
-              <tr>
-                <td><em>AW</em></td>
-                <td>Annual Worth—equivalent uniform annual amount.</td>
-                <td>Currency per period.</td>
-                <td>AW = EUAB - EUAC. Accept if AW ≥ 0.</td>
-              </tr>
-              <tr>
-                <td><em>EUAC</em></td>
-                <td>Equivalent Uniform Annual Cost.</td>
-                <td>Currency per period.</td>
-                <td>Converts all costs to equivalent uniform annual amount.</td>
-              </tr>
-              <tr>
-                <td><em>EUAB</em></td>
-                <td>Equivalent Uniform Annual Benefit.</td>
-                <td>Currency per period.</td>
-                <td>Converts all benefits to equivalent uniform annual amount.</td>
-              </tr>
-              <tr>
-                <td><em>CR</em></td>
-                <td>Capital Recovery—annual cost to recover initial investment.</td>
-                <td>Currency per period.</td>
-                <td>CR = <em>P</em>(A/P,<em>i</em>,<em>n</em>) - <em>S</em>(A/F,<em>i</em>,<em>n</em>).</td>
-              </tr>
-              <tr>
-                <td><em>MARR</em></td>
-                <td>Minimum Attractive Rate of Return.</td>
-                <td>Dimensionless per period (decimal).</td>
-                <td>Hurdle rate for accept/reject decisions. Used as <em>i</em> in PW/AW analysis.</td>
-              </tr>
-              <tr>
-                <td><em>IRR</em></td>
-                <td>Internal Rate of Return.</td>
-                <td>Dimensionless per period (decimal or percent).</td>
-                <td>Interest rate where NPW = 0. Accept if IRR ≥ MARR.</td>
-              </tr>
-              <tr>
-                <td><em>ΔIRR</em></td>
-                <td>Incremental Internal Rate of Return.</td>
-                <td>Dimensionless per period (decimal or percent).</td>
-                <td>IRR on incremental cash flow between alternatives. Accept increment if ΔIRR ≥ MARR.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="glossary-category" data-category="cashflow">
+            <h3 class="glossary-category-title">Cash Flow Basics</h3>
+            <table class="glossary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Meaning</th>
+                  <th scope="col">Typical units</th>
+                  <th scope="col">Conventions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-search-text="P present worth lump sum currency">
+                  <td><em>P</em></td>
+                  <td>Present worth (lump sum at <em>t</em> = 0 or at the valuation instant).</td>
+                  <td>Currency (e.g., USD).</td>
+                  <td>Single payment unless paired with an annuity factor.</td>
+                </tr>
+                <tr data-search-text="F future worth currency">
+                  <td><em>F</em></td>
+                  <td>Future worth—a one-time cash flow at the end of period <em>n</em>.</td>
+                  <td>Currency.</td>
+                  <td>Uses the same period index as <em>n</em> for <em>i</em>.</td>
+                </tr>
+                <tr data-search-text="A annuity uniform amount per period currency">
+                  <td><em>A</em></td>
+                  <td>Uniform amount per period (“annuity” payment).</td>
+                  <td>Currency per period.</td>
+                  <td><strong>Ordinary annuity:</strong> payments at each <strong>end</strong> of period (default).</td>
+                </tr>
+                <tr data-search-text="S salvage value resale currency">
+                  <td><em>S</em></td>
+                  <td>Salvage value—estimated resale value at end of asset life.</td>
+                  <td>Currency.</td>
+                  <td>Treated as inflow at period <em>n</em> unless specified otherwise.</td>
+                </tr>
+                <tr data-search-text="NCF net cash flow receipt disbursement currency">
+                  <td><em>NCF</em></td>
+                  <td>Net cash flow—receipts minus disbursements in a period.</td>
+                  <td>Currency per period.</td>
+                  <td>Positive = inflow (receipt); Negative = outflow (disbursement).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glossary-category" data-category="time">
+            <h3 class="glossary-category-title">Time & Interest Parameters</h3>
+            <table class="glossary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Meaning</th>
+                  <th scope="col">Typical units</th>
+                  <th scope="col">Conventions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-search-text="i interest discount rate">
+                  <td><em>i</em></td>
+                  <td>Interest (or discount) rate <strong>per interest period</strong>.</td>
+                  <td>Dimensionless per period (enter 0.08 for 8%).</td>
+                  <td>Discrete compounding unless stated continuous <em>r</em>.</td>
+                </tr>
+                <tr data-search-text="n number compounding payment periods">
+                  <td><em>n</em></td>
+                  <td>Number of compounding (or payment) periods in the model.</td>
+                  <td>Integer periods.</td>
+                  <td>Must match the timing of <em>i</em> and each cash flow arrow.</td>
+                </tr>
+                <tr data-search-text="t time index period">
+                  <td><em>t</em></td>
+                  <td>Time index—period number in cash flow timeline.</td>
+                  <td>Integer period index (0, 1, 2, ..., <em>n</em>).</td>
+                  <td><em>t</em> = 0 is the present; <em>t</em> = <em>n</em> is the final period.</td>
+                </tr>
+                <tr data-search-text="r nominal rate m compounding periods">
+                  <td><em>r</em>, <em>m</em></td>
+                  <td>Nominal rate per year (<em>r</em>) and compounding periods per year (<em>m</em>).</td>
+                  <td><em>r</em> as decimal/year; <em>m</em> as count.</td>
+                  <td>Periodic rate <em>i<sub>period</sub></em> = <em>r</em>/<em>m</em>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glossary-category" data-category="gradient">
+            <h3 class="glossary-category-title">Gradient & Special Cash Flows</h3>
+            <table class="glossary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Meaning</th>
+                  <th scope="col">Typical units</th>
+                  <th scope="col">Conventions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-search-text="G gradient arithmetic">
+                  <td><em>G</em></td>
+                  <td>Arithmetic gradient step—cash flows increase by <em>G</em> each period after a base.</td>
+                  <td>Currency per period.</td>
+                  <td>Requires the textbook's "0, <em>G</em>, 2<em>G</em>, …" pattern.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glossary-category" data-category="value">
+            <h3 class="glossary-category-title">Value Metrics</h3>
+            <table class="glossary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Meaning</th>
+                  <th scope="col">Typical units</th>
+                  <th scope="col">Conventions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-search-text="NPW NPV net present worth value currency">
+                  <td><em>NPW</em> / <em>NPV</em></td>
+                  <td>Net Present Worth / Net Present Value.</td>
+                  <td>Currency.</td>
+                  <td>Sum of discounted cash flows at MARR. Accept if NPW ≥ 0.</td>
+                </tr>
+                <tr data-search-text="AW annual worth uniform currency">
+                  <td><em>AW</em></td>
+                  <td>Annual Worth—equivalent uniform annual amount.</td>
+                  <td>Currency per period.</td>
+                  <td>AW = EUAB - EUAC. Accept if AW ≥ 0.</td>
+                </tr>
+                <tr data-search-text="EUAC equivalent uniform annual cost">
+                  <td><em>EUAC</em></td>
+                  <td>Equivalent Uniform Annual Cost.</td>
+                  <td>Currency per period.</td>
+                  <td>Converts all costs to equivalent uniform annual amount.</td>
+                </tr>
+                <tr data-search-text="EUAB equivalent uniform annual benefit">
+                  <td><em>EUAB</em></td>
+                  <td>Equivalent Uniform Annual Benefit.</td>
+                  <td>Currency per period.</td>
+                  <td>Converts all benefits to equivalent uniform annual amount.</td>
+                </tr>
+                <tr data-search-text="CR capital recovery cost">
+                  <td><em>CR</em></td>
+                  <td>Capital Recovery—annual cost to recover initial investment.</td>
+                  <td>Currency per period.</td>
+                  <td>CR = <em>P</em>(A/P,<em>i</em>,<em>n</em>) - <em>S</em>(A/F,<em>i</em>,<em>n</em>).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glossary-category" data-category="decision">
+            <h3 class="glossary-category-title">Decision Criteria</h3>
+            <table class="glossary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Meaning</th>
+                  <th scope="col">Typical units</th>
+                  <th scope="col">Conventions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-search-text="MARR minimum attractive rate of return hurdle">
+                  <td><em>MARR</em></td>
+                  <td>Minimum Attractive Rate of Return.</td>
+                  <td>Dimensionless per period (decimal).</td>
+                  <td>Hurdle rate for accept/reject decisions. Used as <em>i</em> in PW/AW analysis.</td>
+                </tr>
+                <tr data-search-text="IRR internal rate of return">
+                  <td><em>IRR</em></td>
+                  <td>Internal Rate of Return.</td>
+                  <td>Dimensionless per period (decimal or percent).</td>
+                  <td>Interest rate where NPW = 0. Accept if IRR ≥ MARR.</td>
+                </tr>
+                <tr data-search-text="delta IRR incremental internal rate of return">
+                  <td><em>ΔIRR</em></td>
+                  <td>Incremental Internal Rate of Return.</td>
+                  <td>Dimensionless per period (decimal or percent).</td>
+                  <td>IRR on incremental cash flow between alternatives. Accept increment if ΔIRR ≥ MARR.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      <section class="section" id="how-to-solve" aria-labelledby="how-title">
+      <!-- Comprehensive Calculator Section -->
+      <section class="section" id="calculators" aria-labelledby="calc-title">
         <div class="section-head">
-          <h2 id="how-title">How to solve problems &amp; common pitfalls</h2>
-          <p>A compact workflow plus mistakes that cost points on exams.</p>
+          <h2 id="calc-title">Engineering Economics Calculators</h2>
+          <p>All-in-one toolset for common calculations, with step-by-step explanations.</p>
         </div>
-        <ol class="steps-list">
-          <li><strong>Draw the cash-flow diagram.</strong> Mark the period length (week/month/year), then place every known inflow/outflow.</li>
-          <li><strong>Align <em>i</em> and <em>n</em>.</strong> Convert a nominal annual <em>r</em> with compounding <em>m</em> to the periodic rate that matches your payment spacing.</li>
-          <li><strong>Pick factors.</strong> Map each arrow to (P/F), (F/P), (P/A), (F/A), etc., or combine patterns (base + gradient).</li>
-          <li><strong>Compare alternatives fairly.</strong> Same study horizon, MARR, and tax/treatment assumptions unless the prompt says otherwise.</li>
-        </ol>
-        <div class="pitfalls-grid">
-          <div class="pitfall-card">
-            <h3>Ordinary vs annuity due</h3>
-            <p>
-              Tabulated (P/A) and (F/A) factors assume the <strong>first <em>A</em> occurs at the end of period 1</strong>. If the first cash flow is at <em>t</em> = 0, shift with one (F/P) step or use the “annuity due” adjustment from your text—do not plug values blindly.
-            </p>
+        <div class="panel">
+          <div class="calc-tabs" id="calc-tabs">
+            <button class="calc-tab is-on" data-calc="pw">Present Worth (PW)</button>
+            <button class="calc-tab" data-calc="aw">Annual Worth (AW)</button>
+            <button class="calc-tab" data-calc="irr">Internal Rate of Return (IRR)</button>
+            <button class="calc-tab" data-calc="euac">Equivalent Uniform Annual Cost (EUAC)</button>
+            <button class="calc-tab" data-calc="factors">Interest Factors</button>
           </div>
-          <div class="pitfall-card">
-            <h3>MARR vs IRR</h3>
-            <p>
-              <strong>MARR</strong> is the stated hurdle for PW analysis. <strong>IRR</strong> is the rate that zeros NPW for a given cash-flow pattern. For <strong>mutually exclusive</strong> projects, ranking by IRR can disagree with NPW—use NPW (or incremental analysis) at the same MARR unless instructed otherwise.
-            </p>
+
+          <!-- PW Calculator -->
+          <div class="calc-panel is-visible" id="calc-pw">
+            <h3 style="margin-top: 0">Present Worth Calculator</h3>
+            <div class="input-row">
+              <label>Future Value (F)</label>
+              <input id="pw-calc-f" type="number" value="10000" step="100">
+            </div>
+            <div class="input-row">
+              <label>Interest Rate (i) %</label>
+              <input id="pw-calc-i" type="number" value="8" step="0.1">
+            </div>
+            <div class="input-row">
+              <label>Periods (n)</label>
+              <input id="pw-calc-n" type="number" value="5" step="1">
+            </div>
+            <button class="btn btn-primary" id="pw-calc-btn">Calculate PW</button>
+            <div class="calc-output" id="pw-calc-result"></div>
+            <div class="calc-steps" id="pw-calc-steps" style="display:none"></div>
           </div>
-          <div class="pitfall-card">
-            <h3>Nominal vs effective</h3>
-            <p>
-              Compare financing or savings offers using <strong>effective</strong> rates when compounding frequencies differ. A lower quoted nominal rate with daily compounding can beat a higher nominal rate with annual compounding.
-            </p>
+
+          <!-- AW Calculator -->
+          <div class="calc-panel" id="calc-aw">
+            <h3 style="margin-top: 0">Annual Worth Calculator</h3>
+            <div class="input-row">
+              <label>Present Worth (P)</label>
+              <input id="aw-calc-p" type="number" value="50000" step="100">
+            </div>
+            <div class="input-row">
+              <label>Salvage Value (S)</label>
+              <input id="aw-calc-s" type="number" value="10000" step="100">
+            </div>
+            <div class="input-row">
+              <label>Interest Rate (i) %</label>
+              <input id="aw-calc-i" type="number" value="12" step="0.1">
+            </div>
+            <div class="input-row">
+              <label>Periods (n)</label>
+              <input id="aw-calc-n" type="number" value="8" step="1">
+            </div>
+            <button class="btn btn-primary" id="aw-calc-btn">Calculate AW</button>
+            <div class="calc-output" id="aw-calc-result"></div>
+            <div class="calc-steps" id="aw-calc-steps" style="display:none"></div>
+          </div>
+
+          <!-- IRR Calculator -->
+          <div class="calc-panel" id="calc-irr">
+            <h3 style="margin-top: 0">IRR Estimator (5 Periods)</h3>
+            <div class="input-row">
+              <label>Period 0 (Initial Outlay)</label>
+              <input id="irr-calc-0" type="number" value="-100000" step="1000">
+            </div>
+            <div class="input-row">
+              <label>Period 1 Cash Flow</label>
+              <input id="irr-calc-1" type="number" value="30000" step="1000">
+            </div>
+            <div class="input-row">
+              <label>Period 2 Cash Flow</label>
+              <input id="irr-calc-2" type="number" value="40000" step="1000">
+            </div>
+            <div class="input-row">
+              <label>Period 3 Cash Flow</label>
+              <input id="irr-calc-3" type="number" value="50000" step="1000">
+            </div>
+            <div class="input-row">
+              <label>Period 4 Cash Flow</label>
+              <input id="irr-calc-4" type="number" value="30000" step="1000">
+            </div>
+            <button class="btn btn-primary" id="irr-calc-btn">Estimate IRR</button>
+            <div class="calc-output" id="irr-calc-result"></div>
+            <div class="calc-steps" id="irr-calc-steps" style="display:none"></div>
+          </div>
+
+          <!-- EUAC Calculator -->
+          <div class="calc-panel" id="calc-euac">
+            <h3 style="margin-top: 0">EUAC Calculator</h3>
+            <div class="input-row">
+              <label>Initial Cost (P)</label>
+              <input id="euac-calc-p" type="number" value="80000" step="1000">
+            </div>
+            <div class="input-row">
+              <label>Annual Operating Cost (A)</label>
+              <input id="euac-calc-a" type="number" value="15000" step="100">
+            </div>
+            <div class="input-row">
+              <label>Salvage Value (S)</label>
+              <input id="euac-calc-s" type="number" value="10000" step="1000">
+            </div>
+            <div class="input-row">
+              <label>Interest Rate (i) %</label>
+              <input id="euac-calc-i" type="number" value="10" step="0.1">
+            </div>
+            <div class="input-row">
+              <label>Life (n)</label>
+              <input id="euac-calc-n" type="number" value="6" step="1">
+            </div>
+            <button class="btn btn-primary" id="euac-calc-btn">Calculate EUAC</button>
+            <div class="calc-output" id="euac-calc-result"></div>
+            <div class="calc-steps" id="euac-calc-steps" style="display:none"></div>
+          </div>
+
+          <!-- Interest Factors -->
+          <div class="calc-panel" id="calc-factors">
+            <h3 style="margin-top: 0">Interest Factor Calculator</h3>
+            <div class="input-row">
+              <label>Interest Rate (i) %</label>
+              <input id="factors-calc-i" type="number" value="10" step="0.1">
+            </div>
+            <div class="input-row">
+              <label>Periods (n)</label>
+              <input id="factors-calc-n" type="number" value="5" step="1">
+            </div>
+            <button class="btn btn-primary" id="factors-calc-btn">Calculate Factors</button>
+            <div class="calc-output" id="factors-calc-result"></div>
           </div>
         </div>
       </section>

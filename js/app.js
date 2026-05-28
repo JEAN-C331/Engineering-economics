@@ -5,7 +5,6 @@
   const listEl = $("#topic-list");
   const searchEl = $("#topic-search");
   const countEl = $("#topic-count");
-  if (!listEl || !searchEl || !countEl) return;
 
   function escapeHtml(s) {
     return String(s)
@@ -88,8 +87,10 @@
   }
 
   buildChips();
-  searchEl.addEventListener("input", renderTopics);
-  renderTopics();
+  if (searchEl && listEl && countEl) {
+    searchEl.addEventListener("input", renderTopics);
+    renderTopics();
+  }
 
   function openFromHash() {
     const id = new URLSearchParams(location.hash.replace(/^#/, "")).get("topic");
@@ -413,7 +414,7 @@
     { front: "Future worth of a lump sum", tex: String.raw`F=P(1+i)^n` },
     { front: "Present worth of a lump sum", tex: String.raw`P=F(1+i)^{-n}` },
     { front: "Effective annual rate", tex: String.raw`i_a=\left(1+\frac{r}{m}\right)^m-1` },
-    { front: "NPW (word form)", tex: String.raw`\begin{aligned}\mathrm{NPW}&=\mathrm{PW}_{\text{benefits}}\\&\quad-\mathrm{PW}_{\text{costs}}\end{aligned}` },
+    { front: "NPW", tex: String.raw`\begin{aligned}\mathrm{NPW}&=\mathrm{PW}_{\text{benefits}}\\&\quad-\mathrm{PW}_{\text{costs}}\end{aligned}` },
     { front: "End-of-period perpetuity", tex: String.raw`P=\frac{A}{i}` },
     { front: "Future worth of ordinary annuity", tex: String.raw`F=A\left[\frac{(1+i)^n-1}{i}\right]` },
   ];
@@ -484,4 +485,408 @@
     { rootMargin: "-45% 0px -45% 0px", threshold: [0.01, 0.25, 0.6] }
   );
   sections.forEach((s) => obs.observe(s));
+
+  /* ========== DARK/LIGHT THEME TOGGLE ========== */
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const savedTheme = localStorage.getItem('ee-theme') || 'light';
+  
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.body.classList.add('theme-dark');
+      themeToggleBtn.textContent = '☀️';
+    } else {
+      document.body.classList.remove('theme-dark');
+      themeToggleBtn.textContent = '🌙';
+    }
+  }
+  
+  applyTheme(savedTheme);
+  
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = document.body.classList.contains('theme-dark') ? 'dark' : 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('ee-theme', newTheme);
+    applyTheme(newTheme);
+  });
+
+  /* ========== QUICK FORMULAS SECTION ========== */
+  function renderQuickFormulas() {
+    const formulas = [
+      { formula: 'F = P(1+i)^n', label: 'Future Worth', track: 'time-value' },
+      { formula: 'P = F/(1+i)^n', label: 'Present Worth', track: 'time-value' },
+      { formula: 'F = A[(1+i)^n-1]/i', label: 'Future Value of Annuity', track: 'annuities' },
+      { formula: 'P = A[(1+i)^n-1]/[i(1+i)^n]', label: 'Present Value of Annuity', track: 'annuities' },
+      { formula: 'A = P[i(1+i)^n]/[(1+i)^n-1]', label: 'Capital Recovery Factor', track: 'annual' },
+      { formula: 'NPW = ∑NCF_t/(1+i)^t', label: 'Net Present Worth', track: 'present-worth' },
+      { formula: 'AW = NPW(A/P,i,n)', label: 'Annual Worth', track: 'annual' },
+      { formula: 'i_a = (1+r/m)^m - 1', label: 'Effective Annual Rate', track: 'nominal' },
+      { formula: '0 = ∑NCF_t/(1+IRR)^t', label: 'Internal Rate of Return', track: 'return' }
+    ];
+    
+    const grid = document.getElementById('quick-formulas-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = formulas.map(f => `
+      <div class="quick-formula-card" onclick="document.getElementById('hub').scrollIntoView({behavior:'smooth'})">
+        <div>${renderFormula(f.formula, false)}</div>
+        <small>${f.label}</small>
+      </div>
+    `).join('');
+  }
+  renderQuickFormulas();
+
+  /* ========== LEARNING PATH RECOMMENDATIONS ========== */
+  const learningPaths = {
+    beginner: {
+      title: "Beginner Learning Path",
+      description: "Start with the fundamentals and build a strong foundation.",
+      topics: [
+        "Time value of money basics",
+        "Simple vs compound interest",
+        "Present and future worth factors",
+        "Annuities (P/A, F/A, A/P, A/F)",
+        "Cash flow diagrams"
+      ]
+    },
+    review: {
+      title: "Quick Review Path",
+      description: "Focus on key topics for exams and quick reference.",
+      topics: [
+        "Nominal vs effective rates",
+        "Net present worth (NPW) analysis",
+        "Annual worth (AW) method",
+        "Internal rate of return (IRR)",
+        "Common pitfalls to avoid"
+      ]
+    },
+    advanced: {
+      title: "Advanced Learning Path",
+      description: "Deepen your understanding with decision-making and risk analysis.",
+      topics: [
+        "Incremental IRR analysis",
+        "Equipment replacement analysis",
+        "Depreciation methods",
+        "Risk and sensitivity analysis",
+        "Real-world project evaluation"
+      ]
+    }
+  };
+
+  function renderPathRecommendation(pathKey) {
+    const container = document.getElementById('path-recommendations');
+    if (!container) return;
+    const path = learningPaths[pathKey];
+    
+    container.innerHTML = `
+      <h3 style="margin:0 0 10px">${path.title}</h3>
+      <p style="margin:0 0 14px;color:var(--muted)">${path.description}</p>
+      <ul>
+        ${path.topics.map(t => `<li style="margin:6px 0"><strong>${t}</strong></li>`).join('')}
+      </ul>
+    `;
+  }
+
+  const pathBtns = document.querySelectorAll('.path-btn');
+  if (pathBtns.length > 0) {
+    pathBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        pathBtns.forEach(b => b.classList.remove('is-on'));
+        btn.classList.add('is-on');
+        renderPathRecommendation(btn.dataset.path);
+      });
+    });
+    renderPathRecommendation('beginner');
+  }
+
+  /* ========== CALCULATOR TABS ========== */
+  const calcTabs = document.querySelectorAll('.calc-tab');
+  const calcPanels = document.querySelectorAll('.calc-panel');
+
+  if (calcTabs.length > 0 && calcPanels.length > 0) {
+    calcTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.calc;
+        calcTabs.forEach(t => t.classList.remove('is-on'));
+        tab.classList.add('is-on');
+        calcPanels.forEach(p => {
+          p.classList.remove('is-visible');
+          if (p.id === `calc-${target}`) p.classList.add('is-visible');
+        });
+      });
+    });
+  }
+
+  /* ========== PRESENT WORTH CALCULATOR ========== */
+  function calculatePW() {
+    const F = Number(document.getElementById('pw-calc-f').value);
+    const i = Number(document.getElementById('pw-calc-i').value) / 100;
+    const n = Number(document.getElementById('pw-calc-n').value);
+    
+    const factor = 1 / Math.pow(1 + i, n);
+    const P = F * factor;
+    
+    document.getElementById('pw-calc-result').innerHTML = `
+      <strong>Present Worth P ≈ $${P.toFixed(2)}</strong><br>
+      (P/F, ${(i*100).toFixed(1)}%, ${n}) = ${factor.toFixed(6)}
+    `;
+    
+    const steps = document.getElementById('pw-calc-steps');
+    steps.style.display = 'block';
+    steps.innerHTML = `
+      <ol>
+        <li>Use the present worth factor: (P/F, i, n) = 1/(1+i)<sup>n</sup></li>
+        <li>Calculate factor: 1/(1+${i})<sup>${n}</sup> = ${factor.toFixed(6)}</li>
+        <li>Compute PW: P = F × Factor = ${F} × ${factor.toFixed(6)} = $${P.toFixed(2)}</li>
+      </ol>
+    `;
+  }
+
+  const pwBtn = document.getElementById('pw-calc-btn');
+  if (pwBtn) {
+    pwBtn.addEventListener('click', calculatePW);
+    calculatePW();
+  }
+
+  /* ========== ANNUAL WORTH CALCULATOR ========== */
+  function calculateAW() {
+    const P = Number(document.getElementById('aw-calc-p').value);
+    const S = Number(document.getElementById('aw-calc-s').value);
+    const i = Number(document.getElementById('aw-calc-i').value) / 100;
+    const n = Number(document.getElementById('aw-calc-n').value);
+    
+    const apFactor = (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+    const afFactor = i / (Math.pow(1 + i, n) - 1);
+    const CR = P * apFactor - S * afFactor;
+    
+    document.getElementById('aw-calc-result').innerHTML = `
+      <strong>Capital Recovery ≈ $${CR.toFixed(2)}</strong><br>
+      Annual worth calculation complete
+    `;
+    
+    const steps = document.getElementById('aw-calc-steps');
+    steps.style.display = 'block';
+    steps.innerHTML = `
+      <ol>
+        <li>Capital Recovery: CR = P×(A/P,i,n) - S×(A/F,i,n)</li>
+        <li>(A/P, ${(i*100).toFixed(1)}%, ${n}) = ${apFactor.toFixed(6)}</li>
+        <li>(A/F, ${(i*100).toFixed(1)}%, ${n}) = ${afFactor.toFixed(6)}</li>
+        <li>CR = ${P}×${apFactor.toFixed(6)} - ${S}×${afFactor.toFixed(6)} = $${CR.toFixed(2)}</li>
+      </ol>
+    `;
+  }
+
+  const awBtn = document.getElementById('aw-calc-btn');
+  if (awBtn) {
+    awBtn.addEventListener('click', calculateAW);
+    calculateAW();
+  }
+
+  /* ========== IRR CALCULATOR ========== */
+  function calculateIRR() {
+    const cashFlows = [
+      Number(document.getElementById('irr-calc-0').value),
+      Number(document.getElementById('irr-calc-1').value),
+      Number(document.getElementById('irr-calc-2').value),
+      Number(document.getElementById('irr-calc-3').value),
+      Number(document.getElementById('irr-calc-4').value)
+    ];
+    
+    function npw(rate) {
+      let npv = 0;
+      for (let t = 0; t < cashFlows.length; t++) {
+        npv += cashFlows[t] / Math.pow(1 + rate, t);
+      }
+      return npv;
+    }
+    
+    let irr = 0.1;
+    for (let iter = 0; iter < 100; iter++) {
+      const npv = npw(irr);
+      const derivative = (npw(irr + 0.001) - npw(irr)) / 0.001;
+      if (Math.abs(npv) < 1e-8) break;
+      if (Math.abs(derivative) < 1e-12) break;
+      irr = irr - npv / derivative;
+      if (irr < -0.9) irr = 0;
+      if (irr > 2) irr = 0.5;
+    }
+    
+    const irrPercent = irr * 100;
+    
+    document.getElementById('irr-calc-result').innerHTML = `
+      <strong>Internal Rate of Return ≈ ${irrPercent.toFixed(2)}%</strong><br>
+      NPW at this rate ≈ $${npw(irr).toFixed(2)}
+    `;
+    
+    const steps = document.getElementById('irr-calc-steps');
+    if (steps) {
+      steps.style.display = 'block';
+      steps.innerHTML = `
+        <ol>
+          <li>Cash flows: [${cashFlows.join(', ')}]</li>
+          <li>Find rate where NPW ≈ 0</li>
+          <li>IRR ≈ ${irrPercent.toFixed(2)}% (accept if IRR > MARR)</li>
+        </ol>
+      `;
+    }
+  }
+
+  const irrBtn = document.getElementById('irr-calc-btn');
+  if (irrBtn) {
+    irrBtn.addEventListener('click', calculateIRR);
+    calculateIRR();
+  }
+
+  /* ========== EUAC CALCULATOR ========== */
+  function calculateEUAC() {
+    const P = Number(document.getElementById('euac-calc-p').value);
+    const A = Number(document.getElementById('euac-calc-a').value);
+    const S = Number(document.getElementById('euac-calc-s').value);
+    const i = Number(document.getElementById('euac-calc-i').value) / 100;
+    const n = Number(document.getElementById('euac-calc-n').value);
+    
+    const apFactor = (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+    const afFactor = i / (Math.pow(1 + i, n) - 1);
+    const CR = P * apFactor - S * afFactor;
+    const EUAC = CR + A;
+    
+    const resultEl = document.getElementById('euac-calc-result');
+    if (resultEl) {
+      resultEl.innerHTML = `
+        <strong>Equivalent Uniform Annual Cost ≈ $${EUAC.toFixed(2)}</strong><br>
+        Capital Recovery: $${CR.toFixed(2)} + Annual Costs: $${A}
+      `;
+    }
+    
+    const steps = document.getElementById('euac-calc-steps');
+    if (steps) {
+      steps.style.display = 'block';
+      steps.innerHTML = `
+        <ol>
+          <li>EUAC = Capital Recovery + Annual Operating Cost</li>
+          <li>CR = ${P}×${apFactor.toFixed(6)} - ${S}×${afFactor.toFixed(6)} = $${CR.toFixed(2)}</li>
+          <li>EUAC = $${CR.toFixed(2)} + $${A} = $${EUAC.toFixed(2)}</li>
+        </ol>
+      `;
+    }
+  }
+
+  const euacBtn = document.getElementById('euac-calc-btn');
+  if (euacBtn) {
+    euacBtn.addEventListener('click', calculateEUAC);
+    calculateEUAC();
+  }
+
+  /* ========== INTEREST FACTORS CALCULATOR ========== */
+  function calculateFactors() {
+    const i = Number(document.getElementById('factors-calc-i').value) / 100;
+    const n = Number(document.getElementById('factors-calc-n').value);
+    
+    const pf = 1 / Math.pow(1 + i, n);
+    const fp = Math.pow(1 + i, n);
+    const pa = (Math.pow(1 + i, n) - 1) / (i * Math.pow(1 + i, n));
+    const fa = (Math.pow(1 + i, n) - 1) / i;
+    const ap = (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+    const af = i / (Math.pow(1 + i, n) - 1);
+    
+    const resultEl = document.getElementById('factors-calc-result');
+    if (resultEl) {
+      resultEl.innerHTML = `
+        <table style="width:100%;border-collapse:collapse">
+          <tr style="background:var(--surface)">
+            <th style="padding:8px;text-align:left;border:1px solid var(--border)">Factor</th>
+            <th style="padding:8px;text-align:right;border:1px solid var(--border)">Value</th>
+          </tr>
+          <tr><td style="padding:8px;border:1px solid var(--border)">(P/F, ${(i*100).toFixed(1)}%, ${n})</td><td style="padding:8px;text-align:right;border:1px solid var(--border)">${pf.toFixed(6)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border)">(F/P, ${(i*100).toFixed(1)}%, ${n})</td><td style="padding:8px;text-align:right;border:1px solid var(--border)">${fp.toFixed(6)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border)">(P/A, ${(i*100).toFixed(1)}%, ${n})</td><td style="padding:8px;text-align:right;border:1px solid var(--border)">${pa.toFixed(6)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border)">(F/A, ${(i*100).toFixed(1)}%, ${n})</td><td style="padding:8px;text-align:right;border:1px solid var(--border)">${fa.toFixed(6)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border)">(A/P, ${(i*100).toFixed(1)}%, ${n})</td><td style="padding:8px;text-align:right;border:1px solid var(--border)">${ap.toFixed(6)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border)">(A/F, ${(i*100).toFixed(1)}%, ${n})</td><td style="padding:8px;text-align:right;border:1px solid var(--border)">${af.toFixed(6)}</td></tr>
+        </table>
+      `;
+    }
+  }
+
+  const factorsBtn = document.getElementById('factors-calc-btn');
+  if (factorsBtn) {
+    factorsBtn.addEventListener('click', calculateFactors);
+    calculateFactors();
+  }
+
+  /* ========== EXAMPLE FORMULAS ========== */
+  function renderExampleFormulas() {
+    const e1 = document.getElementById('example-formula-1');
+    const e2 = document.getElementById('example-formula-2');
+    const e3 = document.getElementById('example-formula-3');
+    const e4 = document.getElementById('example-formula-4');
+    const e5 = document.getElementById('example-formula-5');
+    const e6 = document.getElementById('example-formula-6');
+    
+    if (e1) e1.innerHTML = renderFormula('P = F \\times (P/F, i, n)', true);
+    if (e2) e2.innerHTML = renderFormula('(P/F, 10\\%, 5) = 1/(1+0.10)^5 = 0.6209', true);
+    if (e3) e3.innerHTML = renderFormula('P = 20000 \\times 0.6209 = 12418.43', true);
+    if (e4) e4.innerHTML = renderFormula('CR = P \\times (A/P,i,n) - S \\times (A/F,i,n)', true);
+    if (e5) e5.innerHTML = renderFormula('EUAC = CR + Annual Costs', true);
+    if (e6) e6.innerHTML = renderFormula('EUAC \\approx 9280', true);
+  }
+  renderExampleFormulas();
+
+  /* ========== GLOSSARY SEARCH ========== */
+  const glossarySearch = document.getElementById('glossary-search');
+  if (glossarySearch) {
+    glossarySearch.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const categories = document.querySelectorAll('.glossary-category');
+      let firstMatch = null;
+      
+      categories.forEach(category => {
+        const rows = category.querySelectorAll('.glossary-table tbody tr');
+        let hasVisible = false;
+        
+        rows.forEach(row => {
+          const searchText = row.dataset.searchText?.toLowerCase() || '';
+          const allText = row.textContent.toLowerCase();
+          const matches = query === '' || searchText.includes(query) || allText.includes(query);
+          
+          row.classList.remove('highlighted');
+          if (matches) {
+            row.classList.remove('hidden');
+            row.classList.add('highlighted');
+            hasVisible = true;
+            if (!firstMatch) firstMatch = row;
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+        
+        if (hasVisible || query === '') {
+          category.classList.remove('hidden');
+        } else {
+          category.classList.add('hidden');
+        }
+      });
+      
+      if (query.length >= 2 && firstMatch) {
+        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+
+  /* ========== GLOBAL SEARCH ========== */
+  const globalSearchInput = document.getElementById('global-search-input');
+  if (globalSearchInput) {
+    globalSearchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      
+      if (query.length >= 2) {
+        const knowledgeSearch = document.getElementById('topic-search');
+        if (knowledgeSearch) {
+          knowledgeSearch.value = query;
+          knowledgeSearch.dispatchEvent(new Event('input'));
+        }
+        
+        document.getElementById('hub').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
 })();
