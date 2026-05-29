@@ -3440,47 +3440,145 @@ body.theme-dark .ecg-chart {
 }
 
 @media (max-width: 768px) {
+  :root {
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --text-xs: 10px;
+    --text-sm: 12px;
+    --text-base: 14px;
+  }
+  
   .site-header {
-    width: calc(100% - 16px);
-    margin: var(--space-xs) auto 0;
-    top: var(--space-xs);
+    width: calc(100% - 12px);
+    margin: 4px auto 0;
+    top: 4px;
+    border-radius: 24px;
   }
   
   .header-inner {
-    padding: var(--space-xs) var(--space-sm);
-    gap: var(--space-sm);
+    padding: 4px 8px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
   }
   
-  .brand h1 {
-    font-size: var(--text-sm);
+  .header-inner::-webkit-scrollbar {
+    display: none;
   }
   
-  nav {
-    order: 3;
-    width: 100%;
-    justify-content: center;
+  .brand {
+    flex-shrink: 0;
+    min-width: fit-content;
   }
   
-  nav ul {
-    justify-content: center;
-    gap: 2px;
-  }
-  
-  nav a {
-    padding: 6px var(--space-sm);
+  .brand-mark {
+    width: 28px;
+    height: 28px;
     font-size: 10px;
   }
   
+  .brand h1 {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  
+  nav {
+    flex-shrink: 0;
+    order: initial;
+    width: auto;
+    justify-content: flex-start;
+  }
+  
+  nav ul {
+    justify-content: flex-start;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  
+  nav a {
+    padding: 4px 10px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  
   .global-search {
-    max-width: 100%;
-    order: 2;
-    width: 100%;
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+    order: initial;
+  }
+  
+  .global-search input {
+    font-size: 11px;
+    padding: 6px 12px;
   }
   
   .theme-toggle {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+  
+  .container {
+    padding: var(--space-lg) var(--space-md);
+  }
+  
+  .knowledge-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  .topic-card {
+    padding: var(--space-md);
+  }
+  
+  .bankruptcy-doctor-panel {
+    padding: var(--space-md);
+  }
+  
+  .level-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+  
+  .level-card {
+    padding: var(--space-md);
+  }
+  
+  table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  
+  table th,
+  table td {
+    padding: 6px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  
+  .chart-container {
+    overflow-x: auto;
+  }
+  
+  .chart-container canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .btn-lg {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 
