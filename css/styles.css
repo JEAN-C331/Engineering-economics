@@ -3681,9 +3681,9 @@ body.theme-dark .ecg-chart {
   
   .chart-container canvas {
     width: 100% !important;
-    height: auto !important;
-    min-height: 240px;
-    max-height: 320px;
+    height: 400px !important;
+    min-height: 400px;
+    max-height: 500px;
     display: block;
   }
   
