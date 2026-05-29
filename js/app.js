@@ -130,7 +130,7 @@
     {
       title: "Uniform series factors",
       body: "Level end-of-period receipts or payments link to P and F through (P/A,i,n) and (F/A,i,n). Always align i and n with the payment period before applying tabulated factors.",
-      tex: String.raw`F=A\left[\frac{(1+i)^n-1}{i}\right],\quad P=A\left[\frac{(1+i)^n-1}{i(1+i)^n}\right]`,
+      tex: String.raw`F=A\left[\frac{(1+i)^n-1}{i}\right]\\[12pt]P=A\left[\frac{(1+i)^n-1}{i(1+i)^n}\right]`,
     },
     {
       title: "Cash-flow diagrams first",

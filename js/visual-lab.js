@@ -196,14 +196,17 @@
 
     const colors = getColors();
     let h = `<rect width="${W}" height="${H}" fill="${colors.bg}"/>`;
-    h += `<text x="${padL}" y="18" fill="${colors.text}" font-size="14">Terminal wealth by year k (discrete points)</text>`;
+    h += `<text x="${W/2}" y="18" text-anchor="middle" fill="${colors.text}" font-size="14">Terminal wealth by year k (discrete points)</text>`;
     h += `<line x1="${x0}" y1="${y0}" x2="${xMax}" y2="${y0}" stroke="${colors.line}" stroke-width="2"/>`;
     h += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${padT}" stroke="${colors.line}" stroke-width="2"/>`;
+    h += `<polygon points="${xMax},${y0} ${xMax - 6},${y0 - 3} ${xMax - 6},${y0 + 3}" fill="${colors.line}"/>`;
+    h += `<polygon points="${x0},${padT} ${x0 - 3},${padT + 6} ${x0 + 3},${padT + 6}" fill="${colors.line}"/>`;
+    h += `<text x="${x0 + (xMax - x0)/2}" y="${y0 + 28}" text-anchor="middle" fill="${colors.muted}" font-size="11">Year k</text>`;
+    h += `<text x="12" y="${padT + (y0 - padT)/2}" text-anchor="middle" fill="${colors.muted}" font-size="11" transform="rotate(-90, 12, ${padT + (y0 - padT)/2})">Terminal wealth ($)</text>`;
     h += `<path d="${dS.trim()}" fill="none" stroke="${colors.simple}" stroke-width="2.5" stroke-dasharray="7 5"/>`;
     h += `<path d="${dC.trim()}" fill="none" stroke="${colors.compound}" stroke-width="2.5"/>`;
-    h += `<text x="${xMax - 200}" y="${padT + 14}" fill="${colors.simple}" font-size="12">Simple: Fk = P(1 + i·k)</text>`;
-    h += `<text x="${xMax - 200}" y="${padT + 30}" fill="${colors.compound}" font-size="12">Compound: Fk = P(1+i)^k</text>`;
-    h += `<text x="${x0}" y="${H - 10}" fill="${colors.muted}" font-size="11">k = 0…${n}</text>`;
+    h += `<text x="${xMax - 200}" y="${padT + 14}" fill="${colors.simple}" font-size="12">Simple: F<tspan baseline-shift="sub" font-size="9">k</tspan> = P(1 + i·k)</text>`;
+    h += `<text x="${xMax - 200}" y="${padT + 30}" fill="${colors.compound}" font-size="12">Compound: F<tspan baseline-shift="sub" font-size="9">k</tspan> = P(1+i)<tspan baseline-shift="super" font-size="9">k</tspan></text>`;
     svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     svg.innerHTML = h;
   }
