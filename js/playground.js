@@ -732,6 +732,9 @@
       gameState.chart.destroy();
     }
 
+    // 设置 canvas 高度以获得更好的宽高比
+    canvas.style.height = '380px';
+
     const currentCase = cases[gameState.currentLevel];
     const marr = parseFloat(document.getElementById('marr-slider').value) / 100;
 
@@ -763,6 +766,7 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             tooltip: {
               callbacks: {
@@ -806,6 +810,7 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             tooltip: {
               callbacks: {
@@ -846,6 +851,7 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             tooltip: {
               callbacks: {
@@ -872,6 +878,7 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             tooltip: {
               callbacks: {

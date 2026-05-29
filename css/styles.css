@@ -3658,8 +3658,8 @@ body.theme-dark .ecg-chart {
   
   /* 2. 优化图片和图表显示 - 确保比例正常 */
   .figure-wrap {
-    padding: var(--space-sm);
-    margin: var(--space-md) 0;
+    padding: 0;
+    margin: var(--space-sm) 0;
     width: 100%;
     box-sizing: border-box;
     overflow: visible;
@@ -3726,22 +3726,23 @@ body.theme-dark .ecg-chart {
   }
   
   .viz-wrapper {
-    padding: var(--space-sm);
+    padding: 0;
     width: 100%;
     box-sizing: border-box;
     overflow: visible;
+    margin: var(--space-sm) 0;
   }
   
   .viz-wrapper canvas {
     width: 100% !important;
     height: auto !important;
-    min-height: 300px;
-    max-height: 400px;
+    min-height: 350px;
+    max-height: 450px;
     display: block;
   }
   
   .bankruptcy-doctor-panel {
-    padding: var(--space-md);
+    padding: var(--space-sm);
   }
   
   .level-grid {

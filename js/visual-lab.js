@@ -82,12 +82,12 @@
     if (!svg || !nEl) return;
     const n = clamp(Number(nEl.value) || 4, 1, 12);
     const flows = readFlows(n);
-    const W = 400;
-    const H = 280;
-    const padL = 45;
-    const padR = 25;
-    const padT = 40;
-    const padB = 70;
+    const W = 360;
+    const H = 300;
+    const padL = 40;
+    const padR = 20;
+    const padT = 35;
+    const padB = 75;
     const baseY = H - padB;
     const x0 = padL;
     const x1 = W - padR;
@@ -166,12 +166,12 @@
     const i = Math.max(0, Number(iEl.value) / 100 || 0.08);
     const n = clamp(Math.round(Number(nEl2.value) || 5), 1, 25);
 
-    const W = 400;
-    const H = 260;
-    const padL = 45;
+    const W = 360;
+    const H = 280;
+    const padL = 40;
     const padR = 20;
     const padT = 35;
-    const padB = 45;
+    const padB = 50;
     const x0 = padL;
     const y0 = H - padB;
     const xMax = W - padR;
