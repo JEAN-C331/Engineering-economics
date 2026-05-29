@@ -95,6 +95,17 @@ body {
   font-size: var(--text-base);
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* Engineering Grid Background */
@@ -3549,64 +3560,134 @@ body.theme-dark .ecg-chart {
   
   .container {
     padding: var(--space-lg) var(--space-md);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  
+  main {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .section {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  
+  .panel {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .knowledge-grid {
     grid-template-columns: 1fr;
     gap: var(--space-md);
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
   
   .topic-card {
     padding: var(--space-md);
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+  }
+  
+  .topic-list {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .hub-layout {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .hub-sidebar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* 2. 优化图片和图表显示 */
   .figure-wrap {
     padding: var(--space-sm);
     margin: var(--space-md) 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   
   .figure-wrap svg {
-    min-height: 200px;
+    min-height: 220px;
     width: 100%;
     height: auto;
+    display: block;
+    object-fit: contain;
   }
   
   .chart-container {
     width: 100%;
     overflow: visible;
-    padding: var(--space-sm);
+    padding: var(--space-md);
+    box-sizing: border-box;
   }
   
   .chart-container canvas {
     max-width: 100%;
-    width: 100%;
-    height: 280px !important;
-    min-height: 280px;
+    width: 100% !important;
+    height: 320px !important;
+    min-height: 320px;
+    display: block;
   }
   
   .illustration-card {
     width: 100%;
     padding: var(--space-md);
+    box-sizing: border-box;
   }
   
-  .viz-panel {
+  .viz-svg-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: var(--space-md);
+    box-sizing: border-box;
+  }
+  
+  .viz-svg-wrap svg {
+    width: 100%;
+    max-width: 500px;
+    min-height: 300px;
+    height: auto;
   }
   
   .viz-split {
     flex-direction: column;
     gap: var(--space-md);
+    width: 100%;
   }
   
   .viz-wrapper {
-    padding: var(--space-sm);
+    padding: var(--space-md);
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .viz-wrapper canvas {
     width: 100% !important;
-    height: 300px !important;
-    min-height: 300px;
+    height: 320px !important;
+    min-height: 320px;
   }
   
   .bankruptcy-doctor-panel {
@@ -3638,6 +3719,8 @@ body.theme-dark .ecg-chart {
   /* 3. 排名榜格式改进 */
   .leaderboard, .ranking {
     padding: var(--space-md);
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .leaderboard-list, .ranking-list {
@@ -3647,6 +3730,52 @@ body.theme-dark .ecg-chart {
   .leaderboard-item, .ranking-item {
     padding: var(--space-sm) var(--space-md);
     font-size: var(--text-sm);
+  }
+  
+  .lb-aside {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .lb-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+  
+  .lb-table th,
+  .lb-table td {
+    padding: 8px 6px;
+    font-size: 11px;
+    text-align: center;
+  }
+  
+  .lb-table th:nth-child(1),
+  .lb-table td:nth-child(1) {
+    width: 15%;
+  }
+  
+  .lb-table th:nth-child(2),
+  .lb-table td:nth-child(2) {
+    width: 40%;
+    text-align: left;
+  }
+  
+  .lb-table th:nth-child(3),
+  .lb-table td:nth-child(3) {
+    width: 25%;
+  }
+  
+  .lb-table th:nth-child(4),
+  .lb-table td:nth-child(4) {
+    width: 20%;
   }
   
   /* 4. 优化计算器步骤面板 */
