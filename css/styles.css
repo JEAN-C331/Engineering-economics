@@ -82,6 +82,32 @@ body.theme-dark {
   box-sizing: border-box;
 }
 
+/* 全局图像和图表基础样式 - 确保比例正常 */
+img,
+canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Canvas 图表样式 */
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 图表类 SVG 样式 */
+.chart-container svg,
+.viz-wrapper svg,
+.figure-wrap svg,
+.illustration-card svg,
+.viz-svg-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -361,6 +387,9 @@ nav a[aria-current="page"]::before {
   transform: translateY(-50%);
   opacity: 0.5;
   transition: opacity var(--transition-fast);
+  width: 18px;
+  height: 18px;
+  display: inline-block;
 }
 
 .global-search input:focus + svg,
@@ -863,6 +892,9 @@ body:not(.theme-dark) .hero-slide-math {
   transform: translateY(-50%);
   opacity: 0.45;
   transition: opacity var(--transition-fast);
+  width: 18px;
+  height: 18px;
+  display: inline-block;
 }
 
 .search-wrap input:focus + svg,
@@ -1473,31 +1505,35 @@ body.theme-dark .quick-formula-card {
   padding: var(--space-md);
   width: 100%;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 .chart-container canvas {
-  max-width: 100%;
-  width: 100%;
-  height: 280px !important;
-  min-height: 280px;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 300px;
+  max-height: 400px;
 }
 
 .viz-wrapper {
   padding: var(--space-md);
   width: 100%;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 .viz-wrapper canvas {
   width: 100% !important;
-  height: 320px !important;
-  min-height: 320px;
+  height: auto !important;
+  min-height: 350px;
+  max-height: 450px;
 }
 
 .illustration-card {
   padding: var(--space-md);
   width: 100%;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 /* Dark mode calc panel */
@@ -3618,17 +3654,16 @@ body.theme-dark .ecg-chart {
     box-sizing: border-box;
   }
   
-  /* 2. 优化图片和图表显示 */
+  /* 2. 优化图片和图表显示 - 确保比例正常 */
   .figure-wrap {
-    padding: var(--space-sm);
+    padding: var(--space-md);
     margin: var(--space-md) 0;
     width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
   }
   
   .figure-wrap svg {
-    min-height: 220px;
     width: 100%;
     height: auto;
     display: block;
@@ -3638,38 +3673,36 @@ body.theme-dark .ecg-chart {
   .chart-container {
     width: 100%;
     overflow: visible;
-    padding: var(--space-md);
+    padding: var(--space-sm);
     box-sizing: border-box;
   }
   
   .chart-container canvas {
-    max-width: 100%;
     width: 100% !important;
-    height: 320px !important;
-    min-height: 320px;
+    height: auto !important;
+    min-height: 280px;
+    max-height: 350px;
     display: block;
   }
   
   .illustration-card {
     width: 100%;
-    padding: var(--space-md);
+    padding: var(--space-sm);
     box-sizing: border-box;
   }
   
   .viz-svg-wrap {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: var(--space-md);
+    display: block;
+    padding: var(--space-sm);
     box-sizing: border-box;
+    overflow: visible;
   }
   
   .viz-svg-wrap svg {
     width: 100%;
-    max-width: 500px;
-    min-height: 300px;
     height: auto;
+    display: block;
   }
   
   .viz-split {
@@ -3679,15 +3712,18 @@ body.theme-dark .ecg-chart {
   }
   
   .viz-wrapper {
-    padding: var(--space-md);
+    padding: var(--space-sm);
     width: 100%;
     box-sizing: border-box;
+    overflow: visible;
   }
   
   .viz-wrapper canvas {
     width: 100% !important;
-    height: 320px !important;
-    min-height: 320px;
+    height: auto !important;
+    min-height: 300px;
+    max-height: 400px;
+    display: block;
   }
   
   .bankruptcy-doctor-panel {
@@ -3716,7 +3752,7 @@ body.theme-dark .ecg-chart {
     white-space: nowrap;
   }
   
-  /* 3. 排名榜格式改进 */
+  /* 3. 排名榜格式改进 - 确保表格宽度合适 */
   .leaderboard, .ranking {
     padding: var(--space-md);
     width: 100%;
@@ -3746,36 +3782,42 @@ body.theme-dark .ecg-chart {
   .lb-table {
     width: 100%;
     max-width: 100%;
-    table-layout: fixed;
+    table-layout: auto;
     border-collapse: collapse;
   }
   
   .lb-table th,
   .lb-table td {
-    padding: 8px 6px;
-    font-size: 11px;
+    padding: 10px 8px;
+    font-size: 12px;
     text-align: center;
+    word-break: break-word;
+    white-space: normal;
   }
   
   .lb-table th:nth-child(1),
   .lb-table td:nth-child(1) {
-    width: 15%;
+    width: 10%;
+    min-width: 40px;
   }
   
   .lb-table th:nth-child(2),
   .lb-table td:nth-child(2) {
-    width: 40%;
+    width: 45%;
     text-align: left;
+    min-width: 120px;
   }
   
   .lb-table th:nth-child(3),
   .lb-table td:nth-child(3) {
     width: 25%;
+    min-width: 60px;
   }
   
   .lb-table th:nth-child(4),
   .lb-table td:nth-child(4) {
     width: 20%;
+    min-width: 70px;
   }
   
   /* 4. 优化计算器步骤面板 */
