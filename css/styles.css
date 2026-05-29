@@ -3649,6 +3649,134 @@ body.theme-dark .ecg-chart {
     font-size: var(--text-sm);
   }
   
+  /* 4. 优化计算器步骤面板 */
+  .calc-steps {
+    padding: var(--space-sm);
+    margin-top: var(--space-sm);
+    font-size: 11px;
+    border-radius: 8px;
+    border-left-width: 3px;
+  }
+  
+  .calc-steps ol {
+    padding-left: var(--space-md);
+    margin: 0;
+  }
+  
+  .calc-steps li {
+    margin: 4px 0;
+    line-height: 1.5;
+  }
+  
+  /* 5. 优化游戏结果对比卡片 */
+  .revelation-content {
+    padding: var(--space-md);
+    border-radius: 12px;
+  }
+  
+  .revelation-text {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+  
+  .revelation-result {
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .user-choice, .correct-choice {
+    padding: var(--space-md);
+    border-radius: 12px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    width: 100%;
+    max-width: 240px;
+    text-align: center;
+    word-wrap: break-word;
+  }
+  
+  .vs {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--muted);
+  }
+  
+  /* 6. 优化计算输出区域 */
+  .calc-output {
+    padding: var(--space-sm);
+    font-size: var(--text-sm);
+  }
+  
+  /* 7. 优化图表容器 */
+  .illustration-card {
+    padding: var(--space-sm);
+    margin: 0;
+  }
+  
+  .calc-illustration {
+    padding: 0;
+    margin-top: var(--space-md);
+  }
+  
+  .viz-panel {
+    margin: var(--space-md) 0;
+  }
+  
+  .viz-panel h3 {
+    font-size: var(--text-base);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .viz-panel p {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+  
+  /* 8. 优化游戏面板 */
+  .bankruptcy-doctor-panel {
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .bankruptcy-doctor-panel h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .bankruptcy-doctor-panel p {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+  
+  /* 9. 优化计算器面板 */
+  .calc-panel {
+    padding: var(--space-md);
+  }
+  
+  .calc-panel h3 {
+    font-size: var(--text-base);
+    margin-bottom: var(--space-md);
+  }
+  
+  .calc-form {
+    padding: 0;
+  }
+  
+  .input-row {
+    margin-bottom: var(--space-sm);
+  }
+  
+  .input-row label {
+    font-size: var(--text-xs);
+    margin-bottom: 4px;
+  }
+  
+  .input-row input {
+    padding: 8px 10px;
+    font-size: var(--text-sm);
+  }
+  
   .btn {
     padding: 8px 16px;
     font-size: 12px;
