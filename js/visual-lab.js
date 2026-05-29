@@ -40,7 +40,7 @@
   }
 
   /* ---------- Cash flow diagram ---------- */
-  const defaultFlows = [-1000, 0, 500, 500, 2000];
+  const defaultFlows = [-800, 0, 500, 500, 2000];
 
   function buildCfdTable(n) {
     const tb = $("#cfd-table tbody");
@@ -82,12 +82,12 @@
     if (!svg || !nEl) return;
     const n = clamp(Number(nEl.value) || 4, 1, 12);
     const flows = readFlows(n);
-    const W = 640;
-    const H = 260;
-    const padL = 55;
-    const padR = 30;
-    const padT = 45;
-    const padB = 80;
+    const W = 400;
+    const H = 280;
+    const padL = 45;
+    const padR = 25;
+    const padT = 40;
+    const padB = 70;
     const baseY = H - padB;
     const x0 = padL;
     const x1 = W - padR;
@@ -166,12 +166,12 @@
     const i = Math.max(0, Number(iEl.value) / 100 || 0.08);
     const n = clamp(Math.round(Number(nEl2.value) || 5), 1, 25);
 
-    const W = 640;
-    const H = 240;
-    const padL = 50;
+    const W = 400;
+    const H = 260;
+    const padL = 45;
     const padR = 20;
-    const padT = 28;
-    const padB = 40;
+    const padT = 35;
+    const padB = 45;
     const x0 = padL;
     const y0 = H - padB;
     const xMax = W - padR;

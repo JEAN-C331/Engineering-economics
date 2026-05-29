@@ -1475,12 +1475,14 @@ body.theme-dark .quick-formula-card {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--space-sm);
+  min-height: 320px;
 }
 
 .illustration-card {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: var(--space-lg);
+  padding: var(--space-sm);
   border: 1px solid var(--border);
   width: 100%;
 }
@@ -3656,7 +3658,7 @@ body.theme-dark .ecg-chart {
   
   /* 2. 优化图片和图表显示 - 确保比例正常 */
   .figure-wrap {
-    padding: var(--space-md);
+    padding: var(--space-sm);
     margin: var(--space-md) 0;
     width: 100%;
     box-sizing: border-box;
@@ -3673,28 +3675,29 @@ body.theme-dark .ecg-chart {
   .chart-container {
     width: 100%;
     overflow: visible;
-    padding: var(--space-sm);
+    padding: 4px;
     box-sizing: border-box;
   }
   
   .chart-container canvas {
     width: 100% !important;
     height: auto !important;
-    min-height: 280px;
-    max-height: 350px;
+    min-height: 240px;
+    max-height: 320px;
     display: block;
   }
   
   .illustration-card {
     width: 100%;
-    padding: var(--space-sm);
+    padding: 4px;
     box-sizing: border-box;
+    margin: 0;
   }
   
   .viz-svg-wrap {
     width: 100%;
     display: block;
-    padding: var(--space-sm);
+    padding: 4px;
     box-sizing: border-box;
     overflow: visible;
   }
@@ -3709,6 +3712,17 @@ body.theme-dark .ecg-chart {
     flex-direction: column;
     gap: var(--space-md);
     width: 100%;
+  }
+  
+  .calc-illustration {
+    padding: 4px;
+    margin: 0;
+  }
+  
+  .calc-illustration svg {
+    width: 100%;
+    height: auto;
+    min-height: 200px;
   }
   
   .viz-wrapper {
