@@ -50,28 +50,90 @@
     for (let t = 0; t <= n; t++) prev[t] = defaultFlows[t] ?? 0;
     for (let t = 0; t <= n; t++) {
       const tr = document.createElement("tr");
+      tr.dataset.t = t;
       tr.innerHTML = `
         <td>${t}</td>
-        <td><input type="number" step="any" class="cfd-cf" data-t="${t}" value="${prev[t]}" aria-label="Cash flow at period ${t}" /></td>
+        <td>
+          <div class="cfd-cf-group">
+            <input type="number" step="any" class="cfd-cf" data-t="${t}" data-idx="0" value="${prev[t]}" aria-label="Cash flow at period ${t}" />
+            <button type="button" class="cfd-add-btn" data-t="${t}" aria-label="Add another cash flow at period ${t}">+</button>
+          </div>
+        </td>
         <td class="cfd-hint">${prev[t] > 0 ? "Inflow" : prev[t] < 0 ? "Outflow" : "—"}</td>`;
       tb.appendChild(tr);
     }
     tb.querySelectorAll(".cfd-cf").forEach((inp) => {
       inp.addEventListener("input", () => {
-        const row = inp.closest("tr");
-        const hint = row && row.querySelector(".cfd-hint");
-        const v = Number(inp.value);
-        if (hint) hint.textContent = v > 0 ? "Inflow" : v < 0 ? "Outflow" : "—";
+        updateCfdRow(inp);
+        drawCfd();
+      });
+    });
+    tb.querySelectorAll(".cfd-add-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const t = Number(btn.dataset.t);
+        const row = btn.closest("tr");
+        const group = row.querySelector(".cfd-cf-group");
+        const inputs = group.querySelectorAll(".cfd-cf");
+        const idx = inputs.length;
+        const newInput = document.createElement("div");
+        newInput.className = "cfd-cf-row";
+        newInput.innerHTML = `
+          <input type="number" step="any" class="cfd-cf" data-t="${t}" data-idx="${idx}" value="0" aria-label="Cash flow ${idx + 1} at period ${t}" />
+          <button type="button" class="cfd-remove-btn" aria-label="Remove this cash flow">×</button>`;
+        group.appendChild(newInput);
+        const newInp = newInput.querySelector(".cfd-cf");
+        const rmBtn = newInput.querySelector(".cfd-remove-btn");
+        newInp.addEventListener("input", () => {
+          updateCfdRow(newInp);
+          drawCfd();
+        });
+        rmBtn.addEventListener("click", () => {
+          group.removeChild(newInput);
+          updateCfdHints();
+          drawCfd();
+        });
         drawCfd();
       });
     });
   }
 
+  function updateCfdRow(inp) {
+    const row = inp.closest("tr");
+    const hint = row.querySelector(".cfd-hint");
+    const t = Number(row.dataset.t);
+    const total = getTotalFlow(t);
+    if (hint) hint.textContent = total > 0 ? "Inflow" : total < 0 ? "Outflow" : "—";
+  }
+
+  function updateCfdHints() {
+    document.querySelectorAll("#cfd-table tbody tr").forEach((row) => {
+      const t = Number(row.dataset.t);
+      const hint = row.querySelector(".cfd-hint");
+      const total = getTotalFlow(t);
+      if (hint) hint.textContent = total > 0 ? "Inflow" : total < 0 ? "Outflow" : "—";
+    });
+  }
+
+  function getTotalFlow(t) {
+    const inputs = document.querySelectorAll(`.cfd-cf[data-t="${t}"]`);
+    let total = 0;
+    inputs.forEach((inp) => {
+      total += Number(inp.value) || 0;
+    });
+    return total;
+  }
+
   function readFlows(n) {
     const arr = [];
     for (let t = 0; t <= n; t++) {
-      const inp = document.querySelector(`.cfd-cf[data-t="${t}"]`);
-      arr[t] = inp ? Number(inp.value) : 0;
+      const inputs = document.querySelectorAll(`.cfd-cf[data-t="${t}"]`);
+      const flows = [];
+      inputs.forEach((inp) => {
+        const v = Number(inp.value);
+        if (v !== 0) flows.push(v);
+      });
+      arr[t] = flows.length > 0 ? flows : 0;
     }
     return arr;
   }
@@ -95,8 +157,20 @@
     const gx = (t) => x0 + (t / span) * (x1 - x0);
 
     let maxAbs = 1;
-    flows.forEach((v) => (maxAbs = Math.max(maxAbs, Math.abs(v) || 0)));
-    const scale = (v) => clamp(18 + (Math.log10(1 + (Math.abs(v) / maxAbs) * 9) / Math.log10(10)) * 55, 16, 85);
+    flows.forEach((v) => {
+      if (Array.isArray(v)) {
+        const total = v.reduce((sum, val) => sum + val, 0);
+        maxAbs = Math.max(maxAbs, Math.abs(total) || 0);
+      } else {
+        maxAbs = Math.max(maxAbs, Math.abs(v) || 0);
+      }
+    });
+    const scale = (v) => {
+      if (maxAbs === 0) return 20;
+      const normalized = Math.abs(v) / maxAbs;
+      const length = normalized * 120;
+      return Math.max(length, 8);
+    };
 
     const colors = getColors();
     let h = `<title>Cash flow diagram</title>`;
@@ -108,15 +182,22 @@
     for (let t = 0; t <= n; t++) {
       const x = gx(t);
       h += `<text x="${x}" y="${baseY + 22}" text-anchor="middle" fill="${colors.muted}" font-size="12">${t}</text>`;
-      const v = flows[t];
-      if (!v) continue;
-      const len = scale(v);
-      const up = v > 0;
+      const flowData = flows[t];
+      if (!flowData) continue;
+      
+      const total = Array.isArray(flowData) 
+        ? flowData.reduce((sum, val) => sum + val, 0) 
+        : flowData;
+      
+      if (total === 0) continue;
+      
+      const len = scale(total);
+      const up = total > 0;
       const y1 = up ? baseY - len : baseY + len;
       const col = up ? colors.positive : colors.negative;
-      h += `<line x1="${x}" y1="${baseY}" x2="${x}" y2="${y1}" stroke="${col}" stroke-width="3"/>`;
+      h += `<line x1="${x}" y1="${baseY}" x2="${x}" y2="${y1}" stroke="${col}" stroke-width="2.5"/>`;
       const ty = up ? y1 - 6 : y1 + 14;
-      h += `<text x="${x}" y="${ty}" text-anchor="middle" fill="${col}" font-size="12">${v}</text>`;
+      h += `<text x="${x}" y="${ty}" text-anchor="middle" fill="${col}" font-size="12" font-weight="500">${total}</text>`;
     }
     svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     svg.setAttribute("role", "img");

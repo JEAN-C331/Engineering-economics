@@ -2116,6 +2116,88 @@ body.theme-dark .cfd-cf::placeholder {
   color: #64748b !important;
 }
 
+.cfd-cf-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.cfd-cf-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cfd-add-btn, .cfd-remove-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cfd-add-btn {
+  background: white;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.cfd-add-btn:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 102, 204, 0.3);
+}
+
+.cfd-remove-btn {
+  background: white;
+  color: var(--color-error);
+  border-color: var(--color-error);
+  font-size: 16px;
+}
+
+.cfd-remove-btn:hover {
+  background: var(--color-error);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+body.theme-dark .cfd-add-btn {
+  background: #1e293b;
+  color: #0284c7;
+  border-color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-dark .cfd-add-btn:hover {
+  background: #0284c7;
+  color: white;
+}
+
+body.theme-dark .cfd-remove-btn {
+  background: #1e293b;
+  color: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-dark .cfd-remove-btn:hover {
+  background: #dc2626;
+  color: white;
+}
+
 /* Challenge Section */
 .challenge-layout {
   display: grid;

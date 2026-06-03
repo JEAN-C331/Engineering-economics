@@ -20,6 +20,9 @@
       crossorigin="anonymous"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
@@ -585,8 +588,8 @@
 
       <section class="section" id="play" aria-labelledby="play-title">
         <div class="section-head">
-          <h2 id="play-title">🏥 Bankruptcy Doctor: Intuition Crusher</h2>
-          <p>Diagnose and save dying engineering projects using the right tools!</p>
+          <h2 id="play-title">🎯 8 Economic Intuition Traps</h2>
+          <p>Identify common mistakes and learn correct engineering economics tools!</p>
         </div>
 
         <div class="bankruptcy-doctor-panel">
@@ -613,23 +616,35 @@
           <div class="level-selector" id="level-selector">
             <div class="level-item level-completed" data-level="0">
               <span class="level-number">1</span>
-              <span class="level-name">The IRR Trap</span>
+              <span class="level-name">Lifespan Illusion</span>
             </div>
             <div class="level-item" data-level="1">
               <span class="level-number">2</span>
-              <span class="level-name">NPW Curve Betrayal</span>
+              <span class="level-name">IRR Ranking</span>
             </div>
             <div class="level-item" data-level="2">
               <span class="level-number">3</span>
-              <span class="level-name">Lifespan Illusion</span>
+              <span class="level-name">Sunk Cost</span>
             </div>
             <div class="level-item" data-level="3">
               <span class="level-number">4</span>
-              <span class="level-name">The Sunk Cost Ghost</span>
+              <span class="level-name">Nominal Rate</span>
             </div>
             <div class="level-item" data-level="4">
               <span class="level-number">5</span>
-              <span class="level-name">MARR's Dark Side</span>
+              <span class="level-name">EUAC Mistake</span>
+            </div>
+            <div class="level-item" data-level="5">
+              <span class="level-number">6</span>
+              <span class="level-name">Gradient Error</span>
+            </div>
+            <div class="level-item" data-level="6">
+              <span class="level-number">7</span>
+              <span class="level-name">NPW Curve</span>
+            </div>
+            <div class="level-item" data-level="7">
+              <span class="level-number">8</span>
+              <span class="level-name">Compounding</span>
             </div>
           </div>
 
@@ -702,7 +717,13 @@
                 <span class="vs">vs</span>
                 <span class="correct-choice" id="correct-choice"></span>
               </div>
+              <!-- Chart Visualization -->
               <div class="revelation-visual" id="revelation-visual"></div>
+              <!-- Step-by-Step Solution Below Chart -->
+              <div class="explanation-card" id="explanation-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: var(--space-lg); margin-top: var(--space-lg);">
+                <h4 style="margin:0 0 var(--space-md); color: var(--text-primary);">🔧 Step-by-Step Solution</h4>
+                <div id="explanation-content"></div>
+              </div>
               <button class="btn btn-primary btn-lg" id="btn-rev-next">Get Your Prescription</button>
             </div>
 
@@ -739,7 +760,29 @@
       </div>
     </footer>
 
+    <!-- Firebase Configuration -->
+    <script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCK97IgtDDCgwQPKBmFkrRH7yPbxZROHTk",
+        authDomain: "engnomics-leaderboard.firebaseapp.com",
+        databaseURL: "https://engnomics-leaderboard-default-rtdb.firebaseio.com",
+        projectId: "engnomics-leaderboard",
+        storageBucket: "engnomics-leaderboard.firebasestorage.app",
+        messagingSenderId: "323550711013",
+        appId: "1:323550711013:web:1d846e8d270a8603ba180c",
+        measurementId: "G-EDZ8B3HNMC"
+      };
+
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      // Expose for use in challenge.js
+      window.firebaseDB = database;
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
     <script defer src="js/knowledge.js"></script>
     <script defer src="js/challenge-data.js"></script>
     <script defer src="js/visual-lab.js"></script>

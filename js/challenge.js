@@ -39,22 +39,6 @@
     return `<code>${escapeHtml(tex)}</code>`;
   }
 
-  function loadLocal() {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (_) {
-      return [];
-    }
-  }
-
-  function saveLocal(entry) {
-    const all = loadLocal();
-    all.push({ ...entry, id: crypto.randomUUID?.() || String(Date.now()) });
-    all.sort((a, b) => b.score - a.score || a.ts - b.ts);
-    localStorage.setItem(LS_KEY, JSON.stringify(all.slice(0, 400)));
-  }
-
   function fmtDay(ts) {
     try {
       return new Date(ts).toLocaleString();
@@ -63,32 +47,29 @@
     }
   }
 
-  /** One row per name + difficulty (best score first in sort order). */
-  function bestRowsForDifficulty(difficulty) {
-    const local = loadLocal().filter((e) => e.difficulty === difficulty);
-    const sorted = [...local].sort((a, b) => b.score - a.score || a.ts - b.ts);
-    const seen = new Set();
-    const out = [];
-    for (const r of sorted) {
-      const k = `${String(r.name).toLowerCase()}|${r.difficulty}`;
-      if (seen.has(k)) continue;
-      seen.add(k);
-      out.push(r);
+  // Save score to Firebase
+  function saveToFirebase(entry) {
+    if (window.firebaseDB) {
+      const scoresRef = window.firebaseDB.ref('leaderboard/' + entry.difficulty);
+      const newScoreRef = scoresRef.push();
+      newScoreRef.set({
+        name: entry.name,
+        score: entry.score,
+        total: entry.total,
+        difficulty: entry.difficulty,
+        timestamp: entry.ts,
+        date: new Date(entry.ts).toLocaleString()
+      })
+      .catch((error) => {
+        console.error("Error saving score:", error);
+      });
     }
-    return out.slice(0, 30);
   }
 
+  // Load leaderboard from Firebase and render
   function renderLeaderboard(difficulty) {
-    const merged = bestRowsForDifficulty(difficulty);
-
-    let rows = "";
-    merged.forEach((r, i) => {
-      rows += `<tr><td>${i + 1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${fmtDay(r.ts)}</td></tr>`;
-    });
-    if (!rows) rows = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">No scores yet.</td></tr>`;
-
-    const footHtml = ``;
-
+    let rows = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">Loading...</td></tr>`;
+    
     lbRoot.innerHTML = `
       <div class="lb-toolbar">
         <span class="lb-label">Difficulty</span>
@@ -106,12 +87,50 @@
           <thead><tr><th>#</th><th>Name</th><th>Score</th><th>When</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
-      </div>
-      ${footHtml}`;
+      </div>`;
 
     lbRoot.querySelectorAll(".lb-tab").forEach((btn) => {
       btn.addEventListener("click", () => renderLeaderboard(btn.getAttribute("data-diff") || "easy"));
     });
+
+    // Load from Firebase
+    if (window.firebaseDB) {
+      const scoresRef = window.firebaseDB.ref('leaderboard/' + difficulty);
+      const topScoresQuery = scoresRef.orderByChild('score').limitToLast(30);
+      
+      topScoresQuery.once('value', (snapshot) => {
+        const data = snapshot.val();
+        const allScores = [];
+        if (data) {
+          Object.keys(data).forEach(key => {
+            allScores.push({ ...data[key], id: key });
+          });
+        }
+        
+        // Process and sort
+        const seen = new Set();
+        const merged = [];
+        allScores.sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
+        
+        for (const r of allScores) {
+          const k = `${String(r.name).toLowerCase()}|${r.difficulty}`;
+          if (seen.has(k)) continue;
+          seen.add(k);
+          merged.push(r);
+        }
+        const finalScores = merged.slice(0, 30);
+
+        // Render
+        rows = "";
+        finalScores.forEach((r, i) => {
+          rows += `<tr><td>${i + 1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${fmtDay(r.timestamp)}</td></tr>`;
+        });
+        if (!rows) rows = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">No scores yet.</td></tr>`;
+
+        const tableBody = lbRoot.querySelector('tbody');
+        if (tableBody) tableBody.innerHTML = rows;
+      });
+    }
   }
 
   function shuffle(arr) {
@@ -239,13 +258,13 @@
       difficulty: state.difficulty,
       ts: Date.now(),
     };
-    saveLocal(entry);
+    saveToFirebase(entry);
 
     root.innerHTML = `
       <div class="challenge-card">
         <h3>Run complete</h3>
         <p class="big-score">${entry.score} / ${entry.total}</p>
-        <p class="muted">${escapeHtml(entry.name)} · ${escapeHtml(entry.difficulty)} · Saved on this browser.</p>
+        <p class="muted">${escapeHtml(entry.name)} · ${escapeHtml(entry.difficulty)} · Saved to leaderboard.</p>
         <button type="button" class="btn" id="ch-again">Play again</button>
       </div>`;
     $("#ch-again", root).addEventListener("click", () => {
