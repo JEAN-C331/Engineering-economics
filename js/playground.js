@@ -91,8 +91,8 @@
       ],
       requiredTool: 'aw',
       revelationText: 'Projects with different lives CANNOT be compared directly by NPV! AW method automatically eliminates lifespan differences.',
-      prescription: 'For projects with different lifespans, use Annual Worth (AW) method! No complex repeat assumptions needed.',
-      visualType: 'dual',
+      prescription: 'For projects with different lifespans, use Annual Worth (AW) method! No complex repeat assumptions needed!',
+      visualType: 'lifespan-euac',
       knowledge: 'AW spreads costs evenly across years, making lifespan differences irrelevant.',
       chartInfo: {
         type: 'Grouped Bar Chart (Cash Flows Over Time)',
@@ -211,7 +211,8 @@ Where $$CF_t$$ = cash flow at time t, $$r$$ = discount rate (MARR).</p>
       requiredTool: 'marginal',
       revelationText: 'Sunk costs are already gone! Decisions should only consider future cash flows!',
       prescription: 'Sunk costs don\'t matter. From now on, only focus on marginal cash flow changes!',
-      visualType: 'ghost',
+      visualType: 'sunk-cost',
+      noMARR: true,
       knowledge: 'Economics looks forward. Spent money is spent - don\'t throw good money after bad!',
       chartInfo: {
         type: 'Side-by-Side Bar Chart (Future Cash Flows)',
@@ -266,8 +267,9 @@ The $5M is already spent – it's "sunk". Whether you continue or switch, you've
       ],
       requiredTool: 'npw',
       revelationText: 'Nominal rates deceive! Always compare Effective Annual Rate (EAR). X has lower nominal rate but higher actual cost!',
-      prescription: 'Always compare Effective Annual Rate (EAR), never be fooled by nominal rates!',
-      visualType: 'dual',
+      prescription: 'Always compare Effective Annual Rate (EAR), NEVER be fooled by nominal rates!',
+      visualType: 'nominal-ear',
+      noMARR: true,
       knowledge: 'More compounding periods = higher effective rate! EAR = (1 + r/m)^m - 1',
       chartInfo: {
         type: 'Bar Chart (Effective Annual Rate Comparison)',
@@ -323,7 +325,8 @@ Where $$r_{nominal}$$ = nominal rate, $$m$$ = compounding periods per year.</p>
       requiredTool: 'aw',
       revelationText: 'Arithmetic average ignores time value of money! Money has interest cost - early costs are "more expensive"!',
       prescription: 'Use EUAC = P × (A/P, i, n) - S × (A/F, i, n), NOT simple arithmetic average!',
-      visualType: 'dual',
+      visualType: 'capital-recovery',
+      noMARR: true,
       knowledge: 'Time is money! $1 today is worth more than $1 tomorrow - can\'t just average.',
       chartInfo: {
         type: 'Cash Flow Diagram (Initial Cost & Salvage)',
@@ -381,7 +384,8 @@ Where: $$P$$ = initial cost, $$S$$ = salvage value, $$(A/P, i, n) = \\frac{i(1+i
       requiredTool: 'chart',
       revelationText: 'In arithmetic gradient formula, G₁ is the increment in YEAR 2, NOT Year 1! Boss got the timing wrong!',
       prescription: 'In arithmetic gradient formula, first increment occurs at Period 2, NOT Period 1! Draw a timeline to confirm!',
-      visualType: 'ghost',
+      visualType: 'arithmetic-gradient',
+      noMARR: true,
       knowledge: 'Count the timeline carefully! P = G × (P/G, i, n) starts from Year 2.',
       chartInfo: {
         type: 'Line Chart (Arithmetic Gradient Cash Flow)',
@@ -777,11 +781,17 @@ Simple interest only earns on the original principal ($100k/year fixed). Compoun
     // 更新关卡选择器
     updateLevelSelector();
 
-    // 重置
+    // 重置MARR滑块
     const marrSlider = document.getElementById('marr-slider');
     const marrValue = document.getElementById('marr-value');
+    const marrSliderContainer = document.querySelector('.marr-slider');
     if (marrSlider) marrSlider.value = currentCase.marr * 100;
     if (marrValue) marrValue.textContent = Math.round(currentCase.marr * 100);
+    
+    // 根据noMARR属性隐藏或显示MARR滑块
+    if (marrSliderContainer) {
+      marrSliderContainer.style.display = currentCase.noMARR ? 'none' : 'block';
+    }
 
     // 显示第一阶段
     showStage('intro');
@@ -1113,6 +1123,259 @@ Simple interest only earns on the original principal ($100k/year fixed). Compoun
           scales: {
             y: {
               title: { display: true, text: 'NPV Value' }
+            }
+          }
+        }
+      };
+    } else if (currentCase.visualType === 'lifespan-euac') {
+      // 第1关：寿命陷阱 - 显示 EUAC 对比
+      const cashflowsA = currentCase.cashflows.A;
+      const cashflowsB = currentCase.cashflows.B;
+      const npvA = calculateNPW(cashflowsA, marr);
+      const npvB = calculateNPW(cashflowsB, marr);
+      
+      // 计算EUAC
+      const nA = cashflowsA.length - 1;
+      const nB = cashflowsB.length - 1;
+      const ap = (i, n) => (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+      const euacA = npvA * ap(marr, nA);
+      const euacB = npvB * ap(marr, nB);
+      
+      config = {
+        type: 'bar',
+        data: {
+          labels: ['Equipment A (NPV)', 'Equipment B (NPV)', 'Equipment A (EUAC)', 'Equipment B (EUAC)'],
+          datasets: [
+            {
+              label: 'Value',
+              data: [npvA, npvB, euacA, euacB],
+              backgroundColor: [
+                'rgba(14, 165, 233, 0.8)',
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(14, 165, 233, 0.8)',
+                'rgba(16, 185, 129, 0.8)'
+              ],
+              borderColor: '#0ea5e9',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return formatMoney(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Value ($)' }
+            }
+          }
+        }
+      };
+    } else if (currentCase.visualType === 'sunk-cost') {
+      // 第3关：沉没成本 - 显示未来NPV对比
+      const marrValue = marr;
+      
+      // 计算未来NPV（不包括已投入的沉没成本）
+      const futureOriginalCF = [-1000000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000];
+      const futureAlternativeCF = [-1200000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000];
+      
+      const npvOriginal = calculateNPW(futureOriginalCF, marrValue);
+      const npvAlternative = calculateNPW(futureAlternativeCF, marrValue);
+      
+      config = {
+        type: 'bar',
+        data: {
+          labels: ['Continue Original (Future NPV)', 'Switch to Project C (Future NPV)'],
+          datasets: [
+            {
+              label: 'Future NPV',
+              data: [npvOriginal, npvAlternative],
+              backgroundColor: [
+                'rgba(14, 165, 233, 0.8)',
+                'rgba(16, 185, 129, 0.8)'
+              ],
+              borderColor: '#0ea5e9',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'Future NPV: ' + formatMoney(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Future NPV ($)' }
+            }
+          }
+        }
+      };
+    } else if (currentCase.visualType === 'nominal-ear') {
+      // 第4关：名义利率陷阱 - 显示EAR对比
+      const rates = currentCase.cashflows;
+      const earX = Math.pow(1 + rates.X.rate / rates.X.compounding, rates.X.compounding) - 1;
+      const earY = Math.pow(1 + rates.Y.rate / rates.Y.compounding, rates.Y.compounding) - 1;
+      
+      config = {
+        type: 'bar',
+        data: {
+          labels: ['Lender X (Nominal)', 'Lender Y (Nominal)', 'Lender X (EAR)', 'Lender Y (EAR)'],
+          datasets: [
+            {
+              label: 'Rate',
+              data: [rates.X.rate * 100, rates.Y.rate * 100, earX * 100, earY * 100],
+              backgroundColor: [
+                'rgba(14, 165, 233, 0.8)',
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(244, 63, 94, 0.8)',
+                'rgba(16, 185, 129, 0.8)'
+              ],
+              borderColor: '#0ea5e9',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y.toFixed(2) + '%';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Rate (%)' }
+            }
+          }
+        }
+      };
+    } else if (currentCase.visualType === 'capital-recovery') {
+      // 第5关：资本回收 - 显示每年成本
+      const naiveCF = currentCase.cashflows.naive;
+      const correctCF = currentCase.cashflows.correct;
+      
+      const years = [];
+      const naiveYearly = [];
+      const correctYearly = [];
+      
+      for (let i = 0; i < naiveCF.length; i++) {
+        years.push('Year ' + i);
+        naiveYearly.push(naiveCF[i]);
+        correctYearly.push(correctCF[i]);
+      }
+      
+      config = {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Naive Calculation',
+              data: naiveYearly,
+              backgroundColor: 'rgba(244, 63, 94, 0.6)',
+              borderColor: 'rgba(244, 63, 94, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Correct EUAC',
+              data: correctYearly,
+              backgroundColor: 'rgba(16, 185, 129, 0.6)',
+              borderColor: 'rgba(16, 185, 129, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + formatMoney(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Cash Flow ($)' }
+            }
+          }
+        }
+      };
+    } else if (currentCase.visualType === 'arithmetic-gradient') {
+      // 第6关：算术梯度 - 显示现金流图
+      const wrongCF = currentCase.cashflows.wrong;
+      const correctCF = currentCase.cashflows.correct;
+      
+      const years = [];
+      const wrongGrad = [];
+      const correctGrad = [];
+      
+      for (let i = 0; i < wrongCF.length; i++) {
+        years.push('Year ' + i);
+        wrongGrad.push(wrongCF[i]);
+        correctGrad.push(correctCF[i]);
+      }
+      
+      config = {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Wrong (G starts at Year 1)',
+              data: wrongGrad,
+              backgroundColor: 'rgba(244, 63, 94, 0.6)',
+              borderColor: 'rgba(244, 63, 94, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Correct (G starts at Year 2)',
+              data: correctGrad,
+              backgroundColor: 'rgba(16, 185, 129, 0.6)',
+              borderColor: 'rgba(16, 185, 129, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + formatMoney(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Gradient Amount ($)' }
             }
           }
         }

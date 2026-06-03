@@ -48,26 +48,54 @@
   }
 
   // Save score to Firebase
-  function saveToFirebase(entry) {
+  function saveScore(name, score, difficulty) {
+    console.log('[saveScore] Called with:', { name, score, difficulty });
+    
+    // Debug alert to verify it's being called
+    alert('准备保存分数：名字=' + name + ' 分数=' + score + ' 难度=' + difficulty);
+    
+    // Check if name is empty
+    if (!name || name.trim() === '') {
+      alert('错误：名字为空，无法保存');
+      console.error('[saveScore] Name is empty, cannot save');
+      return;
+    }
+    
     if (window.firebaseDB) {
-      const scoresRef = window.firebaseDB.ref('leaderboard/' + entry.difficulty);
+      const total = 12;
+      const scoresRef = window.firebaseDB.ref('leaderboard/' + difficulty);
       const newScoreRef = scoresRef.push();
-      newScoreRef.set({
-        name: entry.name,
-        score: entry.score,
-        total: entry.total,
-        difficulty: entry.difficulty,
-        timestamp: entry.ts,
-        date: new Date(entry.ts).toLocaleString()
+      
+      const entry = {
+        name: name,
+        score: score,
+        total: total,
+        difficulty: difficulty,
+        timestamp: Date.now(),
+        date: new Date().toLocaleString()
+      };
+      
+      console.log('[saveScore] Writing entry to Firebase:', entry);
+      
+      newScoreRef.set(entry)
+      .then(() => {
+        console.log('[saveScore] Successfully saved to Firebase!');
+        alert('保存成功！');
       })
       .catch((error) => {
-        console.error("Error saving score:", error);
+        console.error("[saveScore] Error saving score:", error);
+        alert('保存失败：' + (error.message || error));
       });
+    } else {
+      console.warn('[saveScore] FirebaseDB not available');
+      alert('Firebase 未加载，无法保存');
     }
   }
 
   // Load leaderboard from Firebase and render
   function renderLeaderboard(difficulty) {
+    console.log('[renderLeaderboard] Called for difficulty:', difficulty);
+    
     let rows = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">Loading...</td></tr>`;
     
     lbRoot.innerHTML = `
@@ -93,12 +121,17 @@
       btn.addEventListener("click", () => renderLeaderboard(btn.getAttribute("data-diff") || "easy"));
     });
 
-    // Load from Firebase
+    // Load from Firebase with real-time listener
     if (window.firebaseDB) {
+      console.log('[renderLeaderboard] Setting up Firebase real-time listener');
       const scoresRef = window.firebaseDB.ref('leaderboard/' + difficulty);
       const topScoresQuery = scoresRef.orderByChild('score').limitToLast(30);
       
-      topScoresQuery.once('value', (snapshot) => {
+      // Remove any existing listeners first
+      scoresRef.off();
+      
+      topScoresQuery.on('value', (snapshot) => {
+        console.log('[renderLeaderboard] Received Firebase data update');
         const data = snapshot.val();
         const allScores = [];
         if (data) {
@@ -129,6 +162,9 @@
 
         const tableBody = lbRoot.querySelector('tbody');
         if (tableBody) tableBody.innerHTML = rows;
+        console.log('[renderLeaderboard] Leaderboard updated with', finalScores.length, 'scores');
+      }, (error) => {
+        console.error('[renderLeaderboard] Firebase listener error:', error);
       });
     }
   }
@@ -143,18 +179,29 @@
   }
 
   function showSetup() {
+    console.log('[showSetup] Called');
     state.phase = "setup";
+    
+    // Get last used name from localStorage
+    let lastUsedName = "";
+    try {
+      lastUsedName = localStorage.getItem('econhub_last_name') || "";
+      console.log('[showSetup] Loaded last name:', lastUsedName);
+    } catch (e) {
+      console.warn('[showSetup] Error reading last name from localStorage');
+    }
+    
     root.innerHTML = `
       <div class="challenge-card">
         <h3>Challenge mode</h3>
         <p class="muted">12 questions per run. Pick a difficulty, enter your name, then answer step by step. After each question you will see whether you were correct and a worked solution.</p>
         <div class="field-grid">
-          <label class="field"><span>Your name</span><input id="ch-name" type="text" maxlength="24" autocomplete="nickname" placeholder="e.g. Alex" /></label>
+          <label class="field"><span>Your name</span><input id="ch-name" type="text" maxlength="24" autocomplete="nickname" placeholder="e.g. Alex" value="${escapeHtml(lastUsedName)}" /></label>
           <fieldset class="field">
             <legend>Difficulty</legend>
-            <label><input type="radio" name="ch-diff" value="easy" checked /> Easy</label>
-            <label><input type="radio" name="ch-diff" value="medium" /> Medium</label>
-            <label><input type="radio" name="ch-diff" value="hard" /> Hard</label>
+            <label><input type="radio" name="ch-diff" value="easy" ${state.difficulty === "easy" ? "checked" : ""} /> Easy</label>
+            <label><input type="radio" name="ch-diff" value="medium" ${state.difficulty === "medium" ? "checked" : ""} /> Medium</label>
+            <label><input type="radio" name="ch-diff" value="hard" ${state.difficulty === "hard" ? "checked" : ""} /> Hard</label>
           </fieldset>
         </div>
         <button type="button" class="btn btn-primary" id="ch-start">Start challenge</button>
@@ -162,21 +209,36 @@
       </div>`;
 
     $("#ch-start", root).addEventListener("click", () => {
-      const name = ($("#ch-name", root).value || "").trim();
+      console.log('[showSetup] Start button clicked');
+      const nameInput = $("#ch-name", root);
+      const name = (nameInput.value || "").trim();
       const diff = root.querySelector('input[name="ch-diff"]:checked')?.value || "easy";
       const err = $("#ch-err", root);
       err.textContent = "";
+      
       if (name.length < 1) {
         err.textContent = "Please enter your name.";
         return;
       }
+      
+      // Save name to localStorage
+      try {
+        localStorage.setItem('econhub_last_name', name);
+        console.log('[showSetup] Saved name to localStorage:', name);
+      } catch (e) {
+        console.warn('[showSetup] Error saving name to localStorage');
+      }
+      
       state.name = name.slice(0, 24);
       state.difficulty = diff;
+      console.log('[showSetup] Starting challenge with:', { name: state.name, difficulty: state.difficulty });
+      
       const pool = bank[diff] || [];
       if (pool.length < 4) {
         err.textContent = "Question bank missing for this difficulty.";
         return;
       }
+      
       state.items = shuffle(pool).slice(0, 12);
       state.idx = 0;
       state.score = 0;
@@ -217,7 +279,38 @@
     sh.labels.forEach((label, idx) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.innerHTML = escapeHtml(label);
+      
+      // SUPER SIMPLE: if it has any English words of 2 or more letters, it's TEXT
+      const hasRealWords = /[a-z]{2,}/i.test(label);
+      
+      // What is a formula?
+      const isFormula = (
+        // Short math patterns that don't have real words
+        /^r\/\d+$/.test(label) ||
+        /^\([A-Z]\/[A-Z]/.test(label) ||
+        /\^\{?\d+/.test(label) && !hasRealWords ||
+        /^ln/.test(label) ||
+        /^e\^/.test(label) ||
+        /^NPW\s*\=/.test(label)
+      ) && !hasRealWords;
+      
+      if (isFormula) {
+        // Math
+        try {
+          let mathLabel = label
+            .replace(/\$/g, '')
+            .replace(/\^/g, '^')
+            .replace(/\^/g, '^');
+          renderedContent = katexOrPlain(mathLabel, false);
+        } catch (e) {
+          renderedContent = escapeHtml(label);
+        }
+      } else {
+        // 99% of the time it's just TEXT!
+        renderedContent = escapeHtml(label);
+      }
+      
+      b.innerHTML = renderedContent;
       b.addEventListener("click", () => answer(idx));
       opts.appendChild(b);
     });
@@ -250,15 +343,33 @@
   }
 
   function finishRun() {
+    console.log('[finishRun] Called');
     const total = state.items.length;
+    
+    // ALWAYS get name from localStorage to avoid it being lost
+    let nameToSave = state.name;
+    try {
+      if (!nameToSave || nameToSave.trim() === '') {
+        nameToSave = localStorage.getItem('econhub_last_name') || '';
+        console.log('[finishRun] Got name from localStorage:', nameToSave);
+      }
+    } catch (e) {
+      console.warn('[finishRun] Could not get name from localStorage');
+    }
+    
     const entry = {
-      name: state.name,
+      name: nameToSave,
       score: state.score,
-      total,
+      total: total,
       difficulty: state.difficulty,
       ts: Date.now(),
     };
-    saveToFirebase(entry);
+    
+    console.log('[finishRun] Final score:', entry.score, '/', total);
+    console.log('[finishRun] Player data:', { name: entry.name, difficulty: entry.difficulty });
+    
+    // Save to Firebase
+    saveScore(nameToSave, state.score, state.difficulty);
 
     root.innerHTML = `
       <div class="challenge-card">
@@ -267,10 +378,19 @@
         <p class="muted">${escapeHtml(entry.name)} · ${escapeHtml(entry.difficulty)} · Saved to leaderboard.</p>
         <button type="button" class="btn" id="ch-again">Play again</button>
       </div>`;
+      
     $("#ch-again", root).addEventListener("click", () => {
-      showSetup();
+      console.log('[finishRun] Play again button clicked');
+      playAgain();
     });
+    
+    console.log('[finishRun] Refreshing leaderboard');
     renderLeaderboard(state.difficulty);
+  }
+
+  function playAgain() {
+    console.log('[playAgain] Called');
+    showSetup();
   }
 
   showSetup();
