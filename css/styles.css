@@ -1808,6 +1808,42 @@ body:not(.theme-dark) .glossary-table tbody tr.highlighted {
   color: var(--muted);
 }
 
+/* Fill in the Blank styles */
+.fillblank-container {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.fillblank-input {
+  flex: 1;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--text-lg);
+  transition: all var(--transition-smooth);
+}
+
+.fillblank-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg-elev);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+.fillblank-input:disabled {
+  background: var(--surface);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.fillblank-container .btn {
+  padding: var(--space-md) var(--space-lg);
+}
+
 /* Flash Grid */
 .flash-grid {
   display: grid;
@@ -2371,8 +2407,28 @@ body.theme-dark .cfd-remove-btn:hover {
   border-radius: var(--radius-lg);
   background: var(--bg-elev);
   border: 1px solid var(--border);
-  overflow: hidden;
   box-shadow: var(--shadow);
+}
+
+.leaderboard-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--surface);
+}
+
+.leaderboard-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboard-scroll::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 4px;
+}
+
+.leaderboard-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
 }
 
 .lb-table {
@@ -3875,7 +3931,28 @@ body.theme-dark .ecg-chart {
     width: 100%;
     overflow-x: auto;
   }
-  
+
+  .leaderboard-scroll {
+    max-height: 340px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--surface);
+  }
+
+  .leaderboard-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .leaderboard-scroll::-webkit-scrollbar-track {
+    background: var(--surface);
+    border-radius: 3px;
+  }
+
+  .leaderboard-scroll::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+  }
+
   .lb-table {
     width: 100%;
     max-width: 100%;

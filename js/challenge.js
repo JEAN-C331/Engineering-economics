@@ -111,10 +111,12 @@
         </div>
       </div>
       <div class="table-scroll">
-        <table class="lb-table">
-          <thead><tr><th>#</th><th>Name</th><th>Score</th><th>When</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
+        <div class="leaderboard-scroll">
+          <table class="lb-table">
+            <thead><tr><th>#</th><th>Name</th><th>Score</th><th>When</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
       </div>`;
 
     lbRoot.querySelectorAll(".lb-tab").forEach((btn) => {
@@ -153,10 +155,20 @@
         }
         const finalScores = merged.slice(0, 30);
 
-        // Render
+        // Render with proper ranking (same score = same rank)
         rows = "";
+        let currentRank = 0;
+        let currentScore = null;
+        let scoreCount = 0;
+        
         finalScores.forEach((r, i) => {
-          rows += `<tr><td>${i + 1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${fmtDay(r.timestamp)}</td></tr>`;
+          // 如果分数和上一个不同，重置排名
+          if (r.score !== currentScore) {
+            currentScore = r.score;
+            currentRank = scoreCount + 1;
+          }
+          scoreCount++;
+          rows += `<tr><td>${currentRank}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${fmtDay(r.timestamp)}</td></tr>`;
         });
         if (!rows) rows = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">No scores yet.</td></tr>`;
 
@@ -261,11 +273,12 @@
 
   function showQuestion() {
     const q = state.items[state.idx];
-    const sh = shuffleChoiceOrder(q.choices, q.correctIndex);
-    state.shuffledCorrectIndex = sh.correctIndex;
     const prog = `Question ${state.idx + 1} of ${state.items.length}`;
     const promptMathHtml = q.promptMath ? `<div class="q-math">${katexOrPlain(q.promptMath, true)}</div>` : "";
-
+    
+    // 获取题型，默认是 choice
+    const questionType = q.type || 'choice';
+    
     root.innerHTML = `
       <div class="challenge-card">
         <div class="ch-progress"><span>${escapeHtml(prog)}</span><span>Score: ${state.score}</span></div>
@@ -276,43 +289,129 @@
       </div>`;
 
     const opts = $("#ch-opts", root);
-    sh.labels.forEach((label, idx) => {
-      const b = document.createElement("button");
-      b.type = "button";
+
+    // 根据题型渲染不同的 UI
+    if (questionType === 'truefalse') {
+      // 判断题：只有 True 和 False 两个按钮
+      ['True', 'False'].forEach((label, idx) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.innerHTML = escapeHtml(label);
+        b.addEventListener("click", () => answer(idx));
+        opts.appendChild(b);
+      });
+      // 保存正确答案索引（True=0, False=1）
+      state.shuffledCorrectIndex = q.correctIndex;
       
-      // SUPER SIMPLE: if it has any English words of 2 or more letters, it's TEXT
-      const hasRealWords = /[a-z]{2,}/i.test(label);
+    } else if (questionType === 'fillblank') {
+      // 填空题：显示输入框
+      const inputHtml = `
+        <div class="fillblank-container">
+          <input type="text" id="ch-fillblank-input" class="fillblank-input" placeholder="Enter your answer..." autocomplete="off" />
+          <button type="button" class="btn btn-primary" id="ch-fillblank-submit">Submit</button>
+        </div>
+      `;
+      opts.innerHTML = inputHtml;
       
-      // What is a formula?
-      const isFormula = (
-        // Short math patterns that don't have real words
-        /^r\/\d+$/.test(label) ||
-        /^\([A-Z]\/[A-Z]/.test(label) ||
-        /\^\{?\d+/.test(label) && !hasRealWords ||
-        /^ln/.test(label) ||
-        /^e\^/.test(label) ||
-        /^NPW\s*\=/.test(label)
-      ) && !hasRealWords;
+      // 添加提交事件
+      const submitBtn = $("#ch-fillblank-submit", root);
+      const inputField = $("#ch-fillblank-input", root);
       
-      if (isFormula) {
-        // Math
-        try {
-          let mathLabel = label
-            .replace(/\$/g, '')
-            .replace(/\^/g, '^')
-            .replace(/\^/g, '^');
-          renderedContent = katexOrPlain(mathLabel, false);
-        } catch (e) {
+      submitBtn.addEventListener("click", () => {
+        const userAnswer = (inputField.value || "").trim();
+        checkFillBlankAnswer(userAnswer, q.correctAnswer);
+      });
+      
+      // 回车也能提交
+      inputField.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          const userAnswer = (inputField.value || "").trim();
+          checkFillBlankAnswer(userAnswer, q.correctAnswer);
+        }
+      });
+      
+    } else {
+      // 默认选择题
+      const sh = shuffleChoiceOrder(q.choices, q.correctIndex);
+      state.shuffledCorrectIndex = sh.correctIndex;
+      
+      sh.labels.forEach((label, idx) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        
+        // SUPER SIMPLE: if it has any English words of 2 or more letters, it's TEXT
+        const hasRealWords = /[a-z]{2,}/i.test(label);
+        
+        // What is a formula?
+        const isFormula = (
+          // Short math patterns that don't have real words
+          /^r\/\d+$/.test(label) ||
+          /^\([A-Z]\/[A-Z]/.test(label) ||
+          /\^\{?\d+/.test(label) && !hasRealWords ||
+          /^ln/.test(label) ||
+          /^e\^/.test(label) ||
+          /^NPW\s*\=/.test(label)
+        ) && !hasRealWords;
+        
+        let renderedContent;
+        if (isFormula) {
+          // Math
+          try {
+            let mathLabel = label
+              .replace(/\$/g, '')
+              .replace(/\^/g, '^')
+              .replace(/\^/g, '^');
+            renderedContent = katexOrPlain(mathLabel, false);
+          } catch (e) {
+            renderedContent = escapeHtml(label);
+          }
+        } else {
+          // 99% of the time it's just TEXT!
           renderedContent = escapeHtml(label);
         }
-      } else {
-        // 99% of the time it's just TEXT!
-        renderedContent = escapeHtml(label);
-      }
-      
-      b.innerHTML = renderedContent;
-      b.addEventListener("click", () => answer(idx));
-      opts.appendChild(b);
+        
+        b.innerHTML = renderedContent;
+        b.addEventListener("click", () => answer(idx));
+        opts.appendChild(b);
+      });
+    }
+  }
+
+  // 处理填空题答案检查
+  function checkFillBlankAnswer(userAnswer, correctAnswer) {
+    const q = state.items[state.idx];
+    const inputField = $("#ch-fillblank-input", root);
+    const submitBtn = $("#ch-fillblank-submit", root);
+    
+    // 禁用输入和按钮
+    if (inputField) inputField.disabled = true;
+    if (submitBtn) submitBtn.disabled = true;
+    
+    // 检查答案（不区分大小写，去除空格）
+    const normalizedUser = userAnswer.toLowerCase().replace(/\s+/g, '').replace(/[.,%$\\]/g, '');
+    const normalizedCorrect = correctAnswer.toLowerCase().replace(/\s+/g, '').replace(/[.,%$\\]/g, '');
+    const ok = normalizedUser === normalizedCorrect;
+    
+    if (ok) state.score += 1;
+    
+    // 显示反馈
+    const after = $("#ch-after", root);
+    after.classList.remove("hidden");
+    
+    let feedbackClass = ok ? "ok" : "bad";
+    let feedbackText = ok ? "Correct!" : `Incorrect. The correct answer is: ${correctAnswer}`;
+    
+    after.innerHTML = `
+      <div class="verdict ${feedbackClass}">${feedbackText}</div>
+      <div class="solution-math">${katexOrPlain(q.solutionMath, true)}</div>
+      ${q.solutionText ? `<p class="solution-txt">${escapeHtml(q.solutionText)}</p>` : ""}
+      <button type="button" class="btn btn-primary" id="ch-next">${state.idx + 1 < state.items.length ? "Next question" : "See results"}</button>`;
+
+    $("#ch-next", after).addEventListener("click", () => {
+      if (state.idx + 1 < state.items.length) {
+        state.idx += 1;
+        showQuestion();
+      } else finishRun();
     });
   }
 
